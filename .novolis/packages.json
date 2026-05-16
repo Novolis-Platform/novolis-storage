@@ -1,0 +1,14 @@
+{
+  "packages": {
+    "Novolis.Storage": {
+      "paths": [
+        "src/Novolis.Storage/**",
+        "tests/**",
+        "Directory.Build.props",
+        "Directory.Packages.props",
+        "global.json"
+      ],
+      "project": "src/Novolis.Storage/Novolis.Storage.csproj"
+    }
+  }
+}
