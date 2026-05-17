@@ -1,7 +1,6 @@
-using FluentAssertions;
-
 using Novolis.Storage.Sqlite;
 using Novolis.Storage.Tests.Shared;
+using TUnit.Core;
 
 namespace Novolis.Storage.Tests.Repositories;
 
@@ -26,16 +25,12 @@ public class SqliteRepositoryTests : DataStorageTestBase<ExampleClass>
         // Assert
         // Check that the items exist in the repository
         var item1 = await repository.GetByIdAsync(testData1.Id);
-        item1.Should()
-             .NotBeNull();
-        item1.Should()
-             .BeEquivalentTo(testData1);
+        await Assert.That(item1).IsNotNull();
+        await Assert.That(item1!).IsEquivalentTo(testData1);
 
         var item2 = await repository.GetByIdAsync(testData2.Id);
-        item2.Should()
-             .NotBeNull();
-        item2.Should()
-             .BeEquivalentTo(testData2);
+        await Assert.That(item2).IsNotNull();
+        await Assert.That(item2!).IsEquivalentTo(testData2);
 
         // Delay to make sure the file is saved
         // await Task.Delay(1500);
@@ -46,7 +41,6 @@ public class SqliteRepositoryTests : DataStorageTestBase<ExampleClass>
         // Assert
         // Check that the item does not exist in the repository
         item1 = await repository.GetByIdAsync(testData1.Id);
-        item1.Should()
-             .BeNull();
+        await Assert.That(item1).IsNull();
     }
 }
