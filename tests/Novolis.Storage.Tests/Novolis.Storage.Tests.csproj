@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="TUnit" />
+    <ProjectReference Include="..\..\src\Novolis.Storage.Json\Novolis.Storage.Json.csproj" />
+    <ProjectReference Include="..\..\src\Novolis.Storage.Sqlite\Novolis.Storage.Sqlite.csproj" />
+  </ItemGroup>
+</Project>

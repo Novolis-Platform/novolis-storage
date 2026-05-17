@@ -1,0 +1,19 @@
+using Novolis.Storage.Abstractions;
+
+namespace Novolis.Storage.Tests.Shared;
+
+/// <exclude/>
+public class ExampleClass : IKeyed
+{
+    public Guid Id { get; set; }
+    public string SomeData { get; set; } = string.Empty;
+    public int Int { get; set; }
+    public long Long { get; set; }
+    public float Float { get; set; }
+    public double Double { get; set; }
+    public decimal Decimal { get; set; }
+    public DateTime DateTime { get; set; }
+    public DateTimeOffset DateTimeOffset { get; set; }
+    public TimeSpan TimeSpan { get; set; }
+    public bool Boolean { get; set; }
+}

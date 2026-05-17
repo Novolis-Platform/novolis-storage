@@ -1,14 +1,16 @@
 {
   "packages": {
-    "Novolis.Storage": {
-      "paths": [
-        "src/Novolis.Storage/**",
-        "tests/**",
-        "Directory.Build.props",
-        "Directory.Packages.props",
-        "global.json"
-      ],
-      "project": "src/Novolis.Storage/Novolis.Storage.csproj"
+    "Novolis.Storage.Abstractions": {
+      "project": "src/Novolis.Storage.Abstractions/Novolis.Storage.Abstractions.csproj",
+      "paths": ["src/Novolis.Storage.Abstractions/**", "Novolis.Storage.slnx"]
+    },
+    "Novolis.Storage.Json": {
+      "project": "src/Novolis.Storage.Json/Novolis.Storage.Json.csproj",
+      "paths": ["src/Novolis.Storage.Json/**", "src/Novolis.Storage.Abstractions/**", "Novolis.Storage.slnx"]
+    },
+    "Novolis.Storage.Sqlite": {
+      "project": "src/Novolis.Storage.Sqlite/Novolis.Storage.Sqlite.csproj",
+      "paths": ["src/Novolis.Storage.Sqlite/**", "src/Novolis.Storage.Abstractions/**", "Novolis.Storage.slnx"]
     }
   }
 }
