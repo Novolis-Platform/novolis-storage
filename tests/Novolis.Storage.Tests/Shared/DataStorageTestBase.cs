@@ -18,7 +18,6 @@ public abstract class DataStorageTestBase<T> where T : class, IKeyed, new()
     protected TRepository GetRepository<TRepository>() where TRepository : notnull
         => _host!.Services.GetRequiredService<TRepository>();
 
-    [Before(Test)]
     public async Task SetUpHost()
     {
         var builder = Host.CreateApplicationBuilder();
@@ -41,7 +40,6 @@ public abstract class DataStorageTestBase<T> where T : class, IKeyed, new()
         await _host.StartAsync();
     }
 
-    [After(Test)]
     public async Task TearDownHost()
     {
         if (_host is not null)

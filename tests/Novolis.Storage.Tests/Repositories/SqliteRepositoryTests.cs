@@ -1,4 +1,4 @@
-using Novolis.Storage.Sqlite;
+using Novolis.Storage.Abstractions;
 using Novolis.Storage.Tests.Shared;
 using TUnit.Core;
 
@@ -11,9 +11,12 @@ public class SqliteRepositoryTests : DataStorageTestBase<ExampleClass>
     [Test]
     public async Task RunTests()
     {
+        await SetUpHost();
+        try
+        {
         // Arrange
         // Here we are assuming that JsonTable and JsonContext classes are something like this:
-        var repository = GetRepository<SqliteRepository<ExampleClass>>();
+        var repository = GetRepository<IRepository<ExampleClass>>();
 
         var testData1 = new ExampleClass { Id = Guid.NewGuid(), SomeData = "Test1", DateTime = new DateTime(new DateOnly(2021, 1, 1), new TimeOnly(), DateTimeKind.Utc), DateTimeOffset = new DateTimeOffset(2021, 1, 1, 1, 1, 1, TimeSpan.Zero), TimeSpan = new TimeSpan(1, 2, 3), Boolean = true };
         var testData2 = new ExampleClass { Id = Guid.NewGuid(), SomeData = "Test2", DateTime = new DateTime(new DateOnly(2021, 1, 1), new TimeOnly(), DateTimeKind.Utc), DateTimeOffset = new DateTimeOffset(2021, 1, 1, 1, 1, 1, TimeSpan.Zero), TimeSpan = new TimeSpan(1, 2, 3), Boolean = true };
@@ -42,5 +45,10 @@ public class SqliteRepositoryTests : DataStorageTestBase<ExampleClass>
         // Check that the item does not exist in the repository
         item1 = await repository.GetByIdAsync(testData1.Id);
         await Assert.That(item1).IsNull();
+        }
+        finally
+        {
+            await TearDownHost();
+        }
     }
 }
