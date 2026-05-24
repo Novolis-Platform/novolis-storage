@@ -8,25 +8,34 @@ using Microsoft.Data.Sqlite;
 
 namespace Novolis.Storage.Sqlite;
 
+/// <summary>
+/// <see cref="IRepository{T}"/> backed by SQLite via <see cref="ISqliteClient"/>.
+/// </summary>
+/// <typeparam name="T">Keyed entity type.</typeparam>
 public class SqliteRepository<T> : IRepository<T> where T : class, IKeyed, new()
 {
     private readonly ISqliteClient _sqliteClient;
 
+    /// <summary>
+    /// Ensures the entity table exists before use.
+    /// </summary>
+    /// <param name="sqliteClient">SQLite client.</param>
     public SqliteRepository(ISqliteClient sqliteClient)
     {
         _sqliteClient = sqliteClient;
         _sqliteClient.EnsureTableExistsAsync<T>().GetAwaiter().GetResult();
     }
 
+    /// <inheritdoc />
     public IQueryable<T?> GetAll()
     {
         var entities = _sqliteClient.RunQueryAsync<T>($"SELECT * FROM {typeof(T).Name}").Result;
-        
+
         if (entities.Rows.Count == 0)
             return new List<T?>().AsQueryable();
-        
+
         var result = new List<T>();
-        
+
         foreach (DataRow row in entities.Rows)
         {
             var entity = new T();
@@ -49,10 +58,11 @@ public class SqliteRepository<T> : IRepository<T> where T : class, IKeyed, new()
             }
             result.Add(entity);
         }
-        
+
         return result.AsQueryable();
     }
 
+    /// <inheritdoc />
     public Task AddAsync(T entity)
     {
         var properties = entity.GetType().GetProperties();
@@ -86,6 +96,7 @@ public class SqliteRepository<T> : IRepository<T> where T : class, IKeyed, new()
         };
     }
 
+    /// <inheritdoc />
     public Task UpdateAsync(T entity)
     {
         var properties = entity.GetType().GetProperties();
@@ -99,20 +110,22 @@ public class SqliteRepository<T> : IRepository<T> where T : class, IKeyed, new()
         return _sqliteClient.RunNonQueryCommandAsync(commandBuilder.ToString());
     }
 
-    public async Task DeleteAsync(Guid id) => await _sqliteClient.RunNonQueryCommandAsync($"DELETE FROM {typeof(T).Name} WHERE Id = '{id}'");
+    /// <inheritdoc />
+    public Task DeleteAsync(Guid id) => _sqliteClient.RunNonQueryCommandAsync($"DELETE FROM {typeof(T).Name} WHERE Id = '{id}'");
 
+    /// <inheritdoc />
     public async Task<T?> GetByIdAsync(Guid id)
     {
         var query = $"SELECT * FROM {typeof(T).Name} WHERE Id = '{id}'";
         try
         {
             var dataTable = await _sqliteClient.RunQueryAsync<T>(query);
-        
+
             if (dataTable.Rows.Count == 0)
                 return null;
-        
+
             var entity = new T();
-        
+
             foreach (var property in entity.GetType().GetProperties())
             {
                 var fieldName = property.Name;
@@ -130,7 +143,7 @@ public class SqliteRepository<T> : IRepository<T> where T : class, IKeyed, new()
 
                 entity.SetPropertyValue(fieldType, property, value);
             }
-        
+
             return entity;
         }
         catch (SqliteException e)

@@ -6,10 +6,9 @@ namespace Novolis.Storage.Abstractions;
 public interface IRepository<T> where T : class, IKeyed, new()
 {
     /// <summary>
-    /// Retrieves all entities of type T from the data source.
+    /// Retrieves all entities from the data source.
     /// </summary>
-    /// <typeparam name="T">The type of entities to retrieve.</typeparam>
-    /// <returns>An IQueryable collection of entities.</returns>
+    /// <returns>An queryable collection of entities.</returns>
     IQueryable<T?> GetAll();
 
     /// <summary>

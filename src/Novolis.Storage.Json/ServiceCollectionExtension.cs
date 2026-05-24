@@ -6,8 +6,18 @@ using Microsoft.Extensions.Options;
 
 namespace Novolis.Storage.Json;
 
+/// <summary>
+/// Registers JSON file storage for a keyed entity type.
+/// </summary>
 public static class ServiceCollectionExtensions
 {
+    /// <summary>
+    /// Adds <see cref="JsonContext"/>, connection options, and <see cref="JsonRepository{T}"/> for <typeparamref name="T"/>.
+    /// </summary>
+    /// <typeparam name="T">Entity type stored as JSON files.</typeparam>
+    /// <param name="services">Service collection to extend.</param>
+    /// <param name="configuration">Configuration supplying an optional <c>JsonConnection</c> connection string.</param>
+    /// <returns>The same service collection.</returns>
     public static IServiceCollection AddJsonDataStorage<T>(this IServiceCollection services, IConfiguration configuration) where T : class, IKeyed, new()
     {
         var connectionString = configuration.GetConnectionString(nameof(JsonConnection));

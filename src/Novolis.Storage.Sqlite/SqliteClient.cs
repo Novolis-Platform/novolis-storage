@@ -8,32 +8,46 @@ using Microsoft.Extensions.Options;
 
 namespace Novolis.Storage.Sqlite;
 
+/// <summary>
+/// SQLite client that ensures database files exist and runs commands.
+/// </summary>
 public class SqliteClient : ISqliteClient
 {
     private readonly Microsoft.Data.Sqlite.SqliteConnection _connection;
     private readonly SqliteTypeMapper _sqliteTypeMapper = new();
     private bool _disposed;
 
+    /// <summary>
+    /// Opens or creates the database file from configuration.
+    /// </summary>
+    /// <param name="options">Connection options.</param>
     public SqliteClient(IOptions<SqliteConnection> options)
     {
         _connection = new(options.Value.ConnectionString ?? throw new InvalidOperationException("Connection string is not set."));
-        
+
         var databaseFilePath = _connection.DataSource;
-        
+
         if (string.IsNullOrWhiteSpace(databaseFilePath))
             throw new InvalidOperationException("Database file path is not set.");
-        
+
         var databaseDirectory = Path.GetDirectoryName(databaseFilePath);
-        
+
         if (string.IsNullOrWhiteSpace(databaseDirectory))
             throw new InvalidOperationException("Database directory is not set.");
-        
+
         if (!Directory.Exists(databaseDirectory))
             Directory.CreateDirectory(databaseDirectory);
     }
 
     private static string GetTableName<T>() where T : class, IKeyed, new() => typeof(T).GetDisplayName();
-    
+
+    /// <summary>
+    /// Runs a query and maps the reader with a custom delegate.
+    /// </summary>
+    /// <typeparam name="T">Entity type used for table naming metadata.</typeparam>
+    /// <param name="query">SQL query text.</param>
+    /// <param name="readerFunc">Maps an open <see cref="SqliteDataReader"/> to a result.</param>
+    /// <returns>Mapped result.</returns>
     public async Task<T> RunQueryAsync<T>(string query, Func<SqliteDataReader, T> readerFunc) where T : class, IKeyed, new()
     {
         await using var command = new SqliteCommand(query, _connection);
@@ -58,6 +72,7 @@ public class SqliteClient : ISqliteClient
         return dataTable;
     }
 
+    /// <inheritdoc />
     public async Task<int> RunNonQueryCommandAsync(string command)
     {
         try
@@ -73,7 +88,8 @@ public class SqliteClient : ISqliteClient
             throw new AggregateException($"Error running command: {command}", e);
         }
     }
-    
+
+    /// <inheritdoc />
     public async Task EnsureTableExistsAsync<T>() where T : class, IKeyed, new()
     {
         var tableName = GetTableName<T>();
@@ -83,7 +99,7 @@ public class SqliteClient : ISqliteClient
         await _connection.OpenAsync();
         var tableExists = await tableExistsCommand.ExecuteScalarAsync() != null;
         await _connection.CloseAsync();
-        
+
         if (tableExists)
             return;
 
@@ -94,6 +110,7 @@ public class SqliteClient : ISqliteClient
         await _connection.CloseAsync();
     }
 
+    /// <inheritdoc />
     public void Dispose()
     {
         if (!_disposed)
