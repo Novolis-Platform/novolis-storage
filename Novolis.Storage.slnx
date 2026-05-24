@@ -4,5 +4,6 @@
     <Project Path="src/Novolis.Storage.Json/Novolis.Storage.Json.csproj" />
     <Project Path="src/Novolis.Storage.Sqlite/Novolis.Storage.Sqlite.csproj" />
   </Folder>
-  <Folder Name="/tests/"><Project Path="tests/Novolis.Storage.Tests/Novolis.Storage.Tests.csproj" /></Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Novolis.Storage.Unit/Novolis.Storage.Unit.csproj" /></Folder>
 </Solution>
