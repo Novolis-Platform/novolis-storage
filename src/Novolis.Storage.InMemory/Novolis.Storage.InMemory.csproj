@@ -1,14 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <PackageId>Novolis.Storage.Abstractions</PackageId>
-    <Description>Entity repository and event-store contracts with AddStorage DI composition.</Description>
+    <PackageId>Novolis.Storage.InMemory</PackageId>
+    <Description>In-memory IRepository provider for tests and playtest profiles.</Description>
     <IsPackable>true</IsPackable>
-    <RootNamespace>Novolis.Storage.Abstractions</RootNamespace>
+    <RootNamespace>Novolis.Storage.InMemory</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <ProjectReference Include="../Novolis.Storage.Abstractions/Novolis.Storage.Abstractions.csproj" />
   </ItemGroup>
 </Project>

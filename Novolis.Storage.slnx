@@ -1,9 +1,11 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/Novolis.Storage.Abstractions/Novolis.Storage.Abstractions.csproj" />
+    <Project Path="src/Novolis.Storage.InMemory/Novolis.Storage.InMemory.csproj" />
     <Project Path="src/Novolis.Storage.Json/Novolis.Storage.Json.csproj" />
-    <Project Path="src/Novolis.Storage.Sqlite/Novolis.Storage.Sqlite.csproj" />
+    <Project Path="src/Novolis.Storage.LiteDb/Novolis.Storage.LiteDb.csproj" />
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="tests/Novolis.Storage.Unit/Novolis.Storage.Unit.csproj" /></Folder>
+    <Project Path="tests/Novolis.Storage.Unit/Novolis.Storage.Unit.csproj" />
+  </Folder>
 </Solution>

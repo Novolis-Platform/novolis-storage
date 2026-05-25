@@ -1,15 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <PackageId>Novolis.Storage.Json</PackageId>
-    <Description>JSON file-per-entity IRepository provider.</Description>
-    <IsPackable>true</IsPackable>
-    <RootNamespace>Novolis.Storage.Json</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <ProjectReference Include="../Novolis.Storage.Abstractions/Novolis.Storage.Abstractions.csproj" />
-    <ProjectReference Include="../../../novolis-io/src/Novolis.IO.Workspace/Novolis.IO.Workspace.csproj" />
   </ItemGroup>
 </Project>

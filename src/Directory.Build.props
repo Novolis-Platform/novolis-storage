@@ -1,4 +1,7 @@
 <Project>
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);CS1591;CS1573;CS1574</NoWarn>
+  </PropertyGroup>
   <Import Project="$(MSBuildThisFileDirectory)..\Directory.Build.props" />
   <Import Project="$(MSBuildThisFileDirectory)..\build\Novolis.Storage.Documentation.props"
           Condition="Exists('$(MSBuildThisFileDirectory)..\build\Novolis.Storage.Documentation.props')" />
