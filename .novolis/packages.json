@@ -1,16 +1,28 @@
 {
   "packages": {
+    "Novolis.IO.Workspace": {
+      "project": "src/Novolis.IO.Workspace/Novolis.IO.Workspace.csproj",
+      "paths": ["src/Novolis.IO.Workspace/**"]
+    },
+    "Novolis.IO.Workspace.Testing": {
+      "project": "src/Novolis.IO.Workspace.Testing/Novolis.IO.Workspace.Testing.csproj",
+      "paths": ["src/Novolis.IO.Workspace.Testing/**", "src/Novolis.IO.Workspace/**"]
+    },
     "Novolis.Storage.Abstractions": {
       "project": "src/Novolis.Storage.Abstractions/Novolis.Storage.Abstractions.csproj",
       "paths": ["src/Novolis.Storage.Abstractions/**", "Novolis.Storage.slnx"]
     },
+    "Novolis.Storage.InMemory": {
+      "project": "src/Novolis.Storage.InMemory/Novolis.Storage.InMemory.csproj",
+      "paths": ["src/Novolis.Storage.InMemory/**", "src/Novolis.Storage.Abstractions/**"]
+    },
     "Novolis.Storage.Json": {
       "project": "src/Novolis.Storage.Json/Novolis.Storage.Json.csproj",
-      "paths": ["src/Novolis.Storage.Json/**", "src/Novolis.Storage.Abstractions/**", "Novolis.Storage.slnx"]
+      "paths": ["src/Novolis.Storage.Json/**", "src/Novolis.IO.Workspace/**", "src/Novolis.Storage.Abstractions/**"]
     },
-    "Novolis.Storage.Sqlite": {
-      "project": "src/Novolis.Storage.Sqlite/Novolis.Storage.Sqlite.csproj",
-      "paths": ["src/Novolis.Storage.Sqlite/**", "src/Novolis.Storage.Abstractions/**", "Novolis.Storage.slnx"]
+    "Novolis.Storage.LiteDb": {
+      "project": "src/Novolis.Storage.LiteDb/Novolis.Storage.LiteDb.csproj",
+      "paths": ["src/Novolis.Storage.LiteDb/**", "src/Novolis.Storage.Abstractions/**"]
     }
   }
 }

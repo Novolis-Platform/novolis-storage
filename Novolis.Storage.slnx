@@ -1,5 +1,7 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/Novolis.IO.Workspace/Novolis.IO.Workspace.csproj" />
+    <Project Path="src/Novolis.IO.Workspace.Testing/Novolis.IO.Workspace.Testing.csproj" />
     <Project Path="src/Novolis.Storage.Abstractions/Novolis.Storage.Abstractions.csproj" />
     <Project Path="src/Novolis.Storage.InMemory/Novolis.Storage.InMemory.csproj" />
     <Project Path="src/Novolis.Storage.Json/Novolis.Storage.Json.csproj" />

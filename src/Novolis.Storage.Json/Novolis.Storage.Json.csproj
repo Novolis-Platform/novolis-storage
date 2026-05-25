@@ -10,6 +10,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <ProjectReference Include="../Novolis.Storage.Abstractions/Novolis.Storage.Abstractions.csproj" />
-    <ProjectReference Include="../../../novolis-io/src/Novolis.IO.Workspace/Novolis.IO.Workspace.csproj" />
+    <ProjectReference Include="../Novolis.IO.Workspace/Novolis.IO.Workspace.csproj" />
   </ItemGroup>
 </Project>
