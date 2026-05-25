@@ -13,10 +13,18 @@ Repository and event-journal contracts with `AddStorage` DI composition.
 | `IReadableEventStore` | List events for a stream |
 | `ISnapshotCapableEventStore` | Optional snapshot compaction |
 
-Game-specific command/event apply logic belongs in product repos (`novolis-gaming`, SCR), not here.
+Game-specific command/event apply logic belongs in product repos, not here.
 
 ## Install
 
 ```bash
 dotnet add package Novolis.Storage.Abstractions
+```
+
+## Quick start
+
+```csharp
+services.AddStorageAbstractions();
+var stream = StreamId.FromSession(SessionId.New());
+await eventStore.PublishAsync(stream, new { Kind = "joined" }, cancellationToken);
 ```
