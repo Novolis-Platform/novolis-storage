@@ -34,8 +34,8 @@ public static class LiteDbStorageExtensions
             catch (IOException ex)
             {
                 throw new InvalidOperationException(
-                    "Could not open the local LiteDB database file. Another game or tool instance may already be using it " +
-                    "(close other Star Conflicts Revolt single-player clients that share this profile, then try again).",
+                    "Could not open the local LiteDB database file. Another process may already be using it " +
+                    "(close other applications that share this database path, then try again).",
                     ex);
             }
         });
