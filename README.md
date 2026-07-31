@@ -8,7 +8,11 @@
 |---------|---------|----------------|
 | `Novolis.Storage.Abstractions` | `dotnet add package Novolis.Storage.Abstractions` | [README](https://github.com/Novolis-Platform/novolis-storage/blob/main/src/Novolis.Storage.Abstractions/README.md) |
 | `Novolis.Storage.Json` | `dotnet add package Novolis.Storage.Json` | [README](https://github.com/Novolis-Platform/novolis-storage/blob/main/src/Novolis.Storage.Json/README.md) |
+| `Novolis.Storage.LiteDb` | `dotnet add package Novolis.Storage.LiteDb` | [README](https://github.com/Novolis-Platform/novolis-storage/blob/main/src/Novolis.Storage.LiteDb/README.md) |
+| `Novolis.Storage.InMemory` | `dotnet add package Novolis.Storage.InMemory` | [README](https://github.com/Novolis-Platform/novolis-storage/blob/main/src/Novolis.Storage.InMemory/README.md) |
 | `Novolis.Storage.Sqlite` | `dotnet add package Novolis.Storage.Sqlite` | [README](https://github.com/Novolis-Platform/novolis-storage/blob/main/src/Novolis.Storage.Sqlite/README.md) |
+| `Novolis.IO.Workspace` | `dotnet add package Novolis.IO.Workspace` | [README](https://github.com/Novolis-Platform/novolis-storage/blob/main/src/Novolis.IO.Workspace/README.md) |
+| `Novolis.IO.Workspace.Testing` | `dotnet add package Novolis.IO.Workspace.Testing` | [README](https://github.com/Novolis-Platform/novolis-storage/blob/main/src/Novolis.IO.Workspace.Testing/README.md) |
 
 For NuGet.org and Visual Studio, the **embedded** README.md inside each package is authoritative.
 
@@ -16,22 +20,26 @@ For NuGet.org and Visual Studio, the **embedded** README.md inside each package 
 
 # Storage
 
-## What it is
+Repository and event-journal abstractions with pluggable providers (JSON files, LiteDB, in-memory, SQLite) plus root-scoped file workspace helpers.
 
-Storage in the Novolis ecosystem.
+## Packages
 
-## Current status
-
-This repository is reserved for the Novolis Storage package.
-Implementation will be migrated or built in later steps.
-
-## Install
-
-Not yet published.
+| Package | Description |
+|---------|-------------|
+| `Novolis.Storage.Abstractions` | `IRepository<T>`, event journal contracts, `AddStorage` |
+| `Novolis.Storage.Json` | File-per-entity JSON repositories |
+| `Novolis.Storage.LiteDb` | LiteDB document store |
+| `Novolis.Storage.InMemory` | In-memory repositories for tests |
+| `Novolis.Storage.Sqlite` | SQLite-backed repositories |
+| `Novolis.IO.Workspace` | Root-scoped file workspace (`IFileWorkspace`) |
+| `Novolis.IO.Workspace.Testing` | In-memory workspace for unit tests |
 
 ## Quick start
 
-Not yet available.
+```csharp
+services.AddStorage(builder => builder.AddJsonProvider(o => o.RootPath = root));
+var repo = sp.GetRequiredService<IRepository<MyEntity>>();
+```
 
 ## Documentation
 
@@ -46,4 +54,3 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 ## Security
 
 See [SECURITY.md](SECURITY.md).
-
