@@ -8,6 +8,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="Novolis.Storage.Unit" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <ProjectReference Include="../Novolis.Storage.Abstractions/Novolis.Storage.Abstractions.csproj" />
     <ProjectReference Include="../Novolis.IO.Workspace/Novolis.IO.Workspace.csproj" />

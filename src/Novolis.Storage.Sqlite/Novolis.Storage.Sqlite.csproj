@@ -11,4 +11,7 @@
     <PackageReference Include="Microsoft.Data.Sqlite" />
     <ProjectReference Include="../Novolis.Storage.Abstractions/Novolis.Storage.Abstractions.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Novolis.Storage.Unit" />
+  </ItemGroup>
 </Project>
