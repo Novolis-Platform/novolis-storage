@@ -1,17 +1,14 @@
 using System.Data;
-
+using Microsoft.Data.Sqlite;
 using Novolis.Storage.Abstractions;
 using Novolis.Storage.Sqlite.Internals;
-
-using Microsoft.Data.Sqlite;
-using Microsoft.Extensions.Options;
 
 namespace Novolis.Storage.Sqlite;
 
 /// <summary>
 /// SQLite client that ensures database files exist and runs commands.
 /// </summary>
-public class SqliteClient : ISqliteClient
+public sealed class SqliteClient : ISqliteClient
 {
     private readonly Microsoft.Data.Sqlite.SqliteConnection _connection;
     private readonly SqliteTypeMapper _sqliteTypeMapper = new();
@@ -21,53 +18,34 @@ public class SqliteClient : ISqliteClient
     /// Opens or creates the database file from configuration.
     /// </summary>
     /// <param name="options">Connection options.</param>
-    public SqliteClient(IOptions<SqliteConnection> options)
+    public SqliteClient(SqliteOptions options)
     {
-        _connection = new(options.Value.ConnectionString ?? throw new InvalidOperationException("Connection string is not set."));
+        _connection = new(options.ConnectionString ?? throw new InvalidOperationException("Connection string is not set."));
 
         var databaseFilePath = _connection.DataSource;
+        if (!string.IsNullOrWhiteSpace(databaseFilePath) && databaseFilePath != ":memory:")
+        {
+            var databaseDirectory = Path.GetDirectoryName(databaseFilePath);
+            if (string.IsNullOrWhiteSpace(databaseDirectory))
+                throw new InvalidOperationException("Database directory is not set.");
 
-        if (string.IsNullOrWhiteSpace(databaseFilePath))
-            throw new InvalidOperationException("Database file path is not set.");
+            if (!Directory.Exists(databaseDirectory))
+                Directory.CreateDirectory(databaseDirectory);
+        }
 
-        var databaseDirectory = Path.GetDirectoryName(databaseFilePath);
-
-        if (string.IsNullOrWhiteSpace(databaseDirectory))
-            throw new InvalidOperationException("Database directory is not set.");
-
-        if (!Directory.Exists(databaseDirectory))
-            Directory.CreateDirectory(databaseDirectory);
+        _connection.Open();
     }
 
-    private static string GetTableName<T>() where T : class, IKeyed, new() => typeof(T).GetDisplayName();
-
-    /// <summary>
-    /// Runs a query and maps the reader with a custom delegate.
-    /// </summary>
-    /// <typeparam name="T">Entity type used for table naming metadata.</typeparam>
-    /// <param name="query">SQL query text.</param>
-    /// <param name="readerFunc">Maps an open <see cref="SqliteDataReader"/> to a result.</param>
-    /// <returns>Mapped result.</returns>
-    public async Task<T> RunQueryAsync<T>(string query, Func<SqliteDataReader, T> readerFunc) where T : class, IKeyed, new()
-    {
-        await using var command = new SqliteCommand(query, _connection);
-        await _connection.OpenAsync();
-        await using var reader = await command.ExecuteReaderAsync();
-        var result = readerFunc(reader);
-        await _connection.CloseAsync();
-        return result;
-    }
+    private static string GetTableName<T>() where T : class, IHasId => typeof(T).Name;
 
     /// <inheritdoc />
-    public async Task<DataTable> RunQueryAsync<T>(string query) where T : class, IKeyed, new()
+    public async Task<DataTable> RunQueryAsync<T>(string query) where T : class, IHasId
     {
         await using var command = new SqliteCommand(query, _connection);
-        await _connection.OpenAsync();
-        await using var reader = await command.ExecuteReaderAsync();
+        await using var reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
         var dataTable = new DataTable(GetTableName<T>());
         if (reader.HasRows)
             dataTable.Load(reader);
-        await _connection.CloseAsync();
 
         return dataTable;
     }
@@ -78,10 +56,7 @@ public class SqliteClient : ISqliteClient
         try
         {
             await using var sqliteCommand = new SqliteCommand(command, _connection);
-            await _connection.OpenAsync();
-            var result = await sqliteCommand.ExecuteNonQueryAsync();
-            await _connection.CloseAsync();
-            return result;
+            return await sqliteCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
         }
         catch (SqliteException e)
         {
@@ -90,24 +65,20 @@ public class SqliteClient : ISqliteClient
     }
 
     /// <inheritdoc />
-    public async Task EnsureTableExistsAsync<T>() where T : class, IKeyed, new()
+    public async Task EnsureTableExistsAsync<T>() where T : class, IHasId
     {
         var tableName = GetTableName<T>();
         var tableExistsQuery = $"SELECT name FROM sqlite_master WHERE type='table' AND name='{tableName}';";
 
         await using var tableExistsCommand = new SqliteCommand(tableExistsQuery, _connection);
-        await _connection.OpenAsync();
-        var tableExists = await tableExistsCommand.ExecuteScalarAsync() != null;
-        await _connection.CloseAsync();
+        var tableExists = await tableExistsCommand.ExecuteScalarAsync().ConfigureAwait(false) != null;
 
         if (tableExists)
             return;
 
         var createTableStatement = _sqliteTypeMapper.CreateTableIfNotExistsStatement<T>();
         await using var createTableCommand = new SqliteCommand(createTableStatement, _connection);
-        await _connection.OpenAsync();
-        await createTableCommand.ExecuteNonQueryAsync();
-        await _connection.CloseAsync();
+        await createTableCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -115,7 +86,7 @@ public class SqliteClient : ISqliteClient
     {
         if (!_disposed)
         {
-            _connection?.Dispose();
+            _connection.Dispose();
             _disposed = true;
         }
 

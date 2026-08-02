@@ -7,8 +7,12 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="TUnit" />
+    <ProjectReference Include="../../src/Novolis.IO.Workspace/Novolis.IO.Workspace.csproj" />
+    <ProjectReference Include="../../src/Novolis.IO.Workspace.Testing/Novolis.IO.Workspace.Testing.csproj" />
     <ProjectReference Include="../../src/Novolis.Storage.Abstractions/Novolis.Storage.Abstractions.csproj" />
     <ProjectReference Include="../../src/Novolis.Storage.InMemory/Novolis.Storage.InMemory.csproj" />
     <ProjectReference Include="../../src/Novolis.Storage.Json/Novolis.Storage.Json.csproj" />
+    <ProjectReference Include="../../src/Novolis.Storage.LiteDb/Novolis.Storage.LiteDb.csproj" />
+    <ProjectReference Include="../../src/Novolis.Storage.Sqlite/Novolis.Storage.Sqlite.csproj" />
   </ItemGroup>
 </Project>

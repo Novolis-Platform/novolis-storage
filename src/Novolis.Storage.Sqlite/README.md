@@ -1,6 +1,6 @@
 # Novolis.Storage.Sqlite
 
-SQLite-backed `IRepository<T>` with automatic table creation from entity properties via reflection.
+SQLite-backed `IRepository<T>` provider for Novolis storage abstractions. Registers a shared `ISqliteClient` singleton plus open-generic repositories.
 
 ## Install
 
@@ -8,7 +8,7 @@ SQLite-backed `IRepository<T>` with automatic table creation from entity propert
 dotnet add package Novolis.Storage.Sqlite
 ```
 
-**Prerequisites:** [.NET 10 SDK](https://dotnet.microsoft.com/download) (`net10.0`).
+**Prerequisites:** [.NET 10 SDK](https://dotnet.microsoft.com/download) (`net10.0`). Depends on **Microsoft.Data.Sqlite** and `Novolis.Storage.Abstractions`.
 
 ## Quick start
 
@@ -17,33 +17,35 @@ using Microsoft.Extensions.DependencyInjection;
 using Novolis.Storage.Abstractions;
 using Novolis.Storage.Sqlite;
 
-services.AddSqliteDataStorage<MyEntity>(configuration);
-```
+services.AddStorage(builder => builder.AddSqliteProvider(o =>
+{
+    o.ConnectionString = "Data Source=Data/novolis.db";
+}));
 
-Entity type must implement `IKeyed`. Configure `ConnectionStrings:SqliteConnection` or use the default `SqliteData/Storage.db` path.
-
-```csharp
 var repo = sp.GetRequiredService<IRepository<MyEntity>>();
 await repo.UpsertAsync(entity, cancellationToken);
 ```
+
+Entity types must implement `IHasId`. Use `Data Source=:memory:` for an in-process database (shared connection for the app lifetime).
 
 ## API
 
 | Type | Role |
 |------|------|
-| `ServiceCollectionExtensions.AddSqliteDataStorage<T>` | Registers `ISqliteClient`, options, `SqliteRepository<T>` |
-| `IRepository<T>` | From Abstractions — CRUD contract |
-| `IKeyed` | Required entity marker for SQLite storage |
+| `SqliteOptions` | `ConnectionString` |
+| `SqliteStorageExtensions.AddSqliteProvider` | Registers `ISqliteClient`, `IRepositoryProvider`, `IRepository<>` |
+| `ISqliteClient` | Low-level connection access for custom SQL |
 
-Schema mapping uses reflection over entity properties (pre-release).
+`AddStorage` (from Abstractions) also registers `IIdProvider` → `GuidV7IdProvider` and `IRepositoryFactory`.
 
 ## Related
 
 | Package | Role |
 |---------|------|
-| `Novolis.Storage.Abstractions` | Repository contracts and `AddStorage` |
-| `Novolis.Storage.Json` | File-based storage without SQLite |
+| `Novolis.Storage.Abstractions` | `IRepository<T>`, `AddStorage`, `IHasId` |
 | `Novolis.Storage.LiteDb` | Embedded document database alternative |
+| `Novolis.Storage.Json` | File-based storage without SQLite |
+| `Novolis.Storage.InMemory` | Volatile repositories for tests |
 
 ## More documentation
 

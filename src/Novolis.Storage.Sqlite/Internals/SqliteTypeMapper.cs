@@ -8,9 +8,9 @@ internal class SqliteTypeMapper
 {
     private readonly SqliteTypeMappingDefinition _typeMappingDefinition = new();
 
-    public string CreateTableIfNotExistsStatement<T>() where T : class, IKeyed, new()
+    public string CreateTableIfNotExistsStatement<T>() where T : class, IHasId
     {
-        var tableName = typeof(T).GetDisplayName();
+        var tableName = typeof(T).Name;
         var properties = typeof(T).GetProperties();
 
         var columns = new List<string>();
@@ -29,7 +29,7 @@ internal class SqliteTypeMapper
         var columnType = _typeMappingDefinition[property.PropertyType];
         var columnDefinition = $"{columnName} {columnType}";
 
-        if (property.Name == nameof(IKeyed.Id))
+        if (property.Name == nameof(IHasId.Id))
         {
             columnDefinition += " PRIMARY KEY";
         }

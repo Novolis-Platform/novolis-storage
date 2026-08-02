@@ -9,7 +9,7 @@ internal static class EntityExtensions
 {
     
     // ReSharper disable once CognitiveComplexity
-    public static void SetPropertyValue<T>(this T entity, Type fieldType, PropertyInfo property, object value) where T : class, IKeyed, new()
+    public static void SetPropertyValue<T>(this T entity, Type fieldType, PropertyInfo property, object value) where T : class, IHasId
     {
         if (fieldType == typeof(Guid))
         {
