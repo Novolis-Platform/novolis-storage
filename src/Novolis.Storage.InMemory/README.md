@@ -1,3 +1,11 @@
+<!-- novolis-pkg-brand:start -->
+<p align="center">
+  <a href="https://github.com/Novolis-Platform/novolis-storage">
+    <img src="https://raw.githubusercontent.com/Novolis-Platform/.github/main/brand/logo-icon.svg" width="72" alt="Novolis"/>
+  </a>
+</p>
+<!-- novolis-pkg-brand:end -->
+
 # Novolis.Storage.InMemory
 
 In-memory `IRepository<T>` provider for unit tests, prototypes, and single-process playtest profiles. Data lives in a process-wide `ConcurrentDictionary` per entity type.
@@ -38,3 +46,4 @@ var all = repo.All();
 | `Novolis.Storage.Abstractions` | Repository contracts and `AddStorage` |
 | `Novolis.Storage.Json` | Durable file-backed repositories |
 | `Novolis.IO.Workspace.Testing` | In-memory file workspace (not repositories) |
+

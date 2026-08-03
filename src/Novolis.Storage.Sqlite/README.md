@@ -1,3 +1,11 @@
+<!-- novolis-pkg-brand:start -->
+<p align="center">
+  <a href="https://github.com/Novolis-Platform/novolis-storage">
+    <img src="https://raw.githubusercontent.com/Novolis-Platform/.github/main/brand/logo-icon.svg" width="72" alt="Novolis"/>
+  </a>
+</p>
+<!-- novolis-pkg-brand:end -->
+
 # Novolis.Storage.Sqlite
 
 SQLite-backed `IRepository<T>` provider for Novolis storage abstractions. Registers a shared `ISqliteClient` singleton plus open-generic repositories.
@@ -51,3 +59,4 @@ Entity types must implement `IHasId`. Use `Data Source=:memory:` for an in-proce
 
 - [Getting started](https://github.com/Novolis-Platform/novolis-storage/blob/main/docs/getting-started.md)
 - [Design](https://github.com/Novolis-Platform/novolis-storage/blob/main/docs/design.md)
+

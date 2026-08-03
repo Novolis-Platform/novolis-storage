@@ -1,3 +1,11 @@
+<!-- novolis-pkg-brand:start -->
+<p align="center">
+  <a href="https://github.com/Novolis-Platform/novolis-storage">
+    <img src="https://raw.githubusercontent.com/Novolis-Platform/.github/main/brand/logo-icon.svg" width="72" alt="Novolis"/>
+  </a>
+</p>
+<!-- novolis-pkg-brand:end -->
+
 # Novolis.IO.Workspace
 
 Root-scoped file workspace: `IFileProvider` reads plus explicit write, delete, and enumeration helpers. Used by JSON storage and other file-backed Novolis packages.
@@ -40,3 +48,4 @@ Static disk helpers (no workspace instance): `PhysicalFileWorkspace.FileExistsOn
 |---------|------|
 | `Novolis.IO.Workspace.Testing` | In-memory `IFileWorkspace` for unit tests |
 | `Novolis.Storage.Json` | JSON repositories backed by `PhysicalFileWorkspace` |
+

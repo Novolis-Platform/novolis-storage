@@ -1,3 +1,11 @@
+<!-- novolis-pkg-brand:start -->
+<p align="center">
+  <a href="https://github.com/Novolis-Platform/novolis-storage">
+    <img src="https://raw.githubusercontent.com/Novolis-Platform/.github/main/brand/logo-icon.svg" width="72" alt="Novolis"/>
+  </a>
+</p>
+<!-- novolis-pkg-brand:end -->
+
 # Novolis.Storage.LiteDb
 
 LiteDB-backed `IRepository<T>` provider for Novolis storage abstractions. Registers a shared `ILiteDatabase` singleton plus open-generic repositories.
@@ -45,3 +53,4 @@ Use `:memory:` for an in-process database (shared connection for the app lifetim
 | `Novolis.Storage.Abstractions` | `IRepository<T>`, `AddStorage`, `IHasId` |
 | `Novolis.Storage.InMemory` | Volatile repositories for tests |
 | `Novolis.Storage.Json` | File-per-entity JSON repositories |
+

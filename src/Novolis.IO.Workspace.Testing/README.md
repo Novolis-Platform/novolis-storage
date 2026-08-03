@@ -1,3 +1,11 @@
+<!-- novolis-pkg-brand:start -->
+<p align="center">
+  <a href="https://github.com/Novolis-Platform/novolis-storage">
+    <img src="https://raw.githubusercontent.com/Novolis-Platform/.github/main/brand/logo-icon.svg" width="72" alt="Novolis"/>
+  </a>
+</p>
+<!-- novolis-pkg-brand:end -->
+
 # Novolis.IO.Workspace.Testing
 
 In-memory `IFileWorkspace` for unit tests. Implements the full workspace contract without disk I/O — suitable for storage and IO tests that need deterministic file layout.
@@ -36,3 +44,4 @@ Constructor requires a `rootPath` (logical root for relative paths).
 |---------|------|
 | `Novolis.IO.Workspace` | Production disk-backed workspace |
 | `Novolis.Storage.InMemory` | In-memory repositories (separate from file workspace) |
+

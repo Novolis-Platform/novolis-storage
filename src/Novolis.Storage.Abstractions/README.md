@@ -1,3 +1,11 @@
+<!-- novolis-pkg-brand:start -->
+<p align="center">
+  <a href="https://github.com/Novolis-Platform/novolis-storage">
+    <img src="https://raw.githubusercontent.com/Novolis-Platform/.github/main/brand/logo-icon.svg" width="72" alt="Novolis"/>
+  </a>
+</p>
+<!-- novolis-pkg-brand:end -->
+
 # Novolis.Storage.Abstractions
 
 Entity repository and event-journal contracts with `AddStorage` DI composition. Game-specific command/event apply logic belongs in product repos, not here.
@@ -73,3 +81,4 @@ await eventStore.PublishAsync(stream, new { Kind = "joined" }, cancellationToken
 | `Novolis.Storage.LiteDb` | LiteDB repositories |
 | `Novolis.Storage.InMemory` | In-memory repositories |
 | `Novolis.Storage.Sqlite` | SQLite repositories |
+
