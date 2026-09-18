@@ -16,6 +16,8 @@
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.8" />
     <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.8" />
     <PackageVersion Include="LiteDB" Version="5.0.21" />
+    <PackageVersion Include="Novolis.IO.Workspace" Version="2026.1.*" />
+    <PackageVersion Include="Novolis.IO.Workspace.Testing" Version="2026.1.*" />
     <PackageVersion Include="TUnit" Version="1.44.39" />
   </ItemGroup>
 </Project>

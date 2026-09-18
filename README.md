@@ -10,8 +10,8 @@
 </p>
 
 <p align="center">
-  <strong>Workspaces and persistence</strong><br/>
-  Storage abstractions, in-memory/SQLite providers, and workspace IO.
+  <strong>Storage and persistence</strong><br/>
+  Storage abstractions and in-memory/SQLite providers.
 </p>
 
 <p align="center">
@@ -41,8 +41,6 @@
 
 | Package | Install | Package README |
 |---------|---------|----------------|
-| `Novolis.IO.Workspace` | `dotnet add package Novolis.IO.Workspace` | [README](https://github.com/Novolis-Platform/novolis-storage/blob/main/src/Novolis.IO.Workspace/README.md) |
-| `Novolis.IO.Workspace.Testing` | `dotnet add package Novolis.IO.Workspace.Testing` | [README](https://github.com/Novolis-Platform/novolis-storage/blob/main/src/Novolis.IO.Workspace.Testing/README.md) |
 | `Novolis.Storage.Abstractions` | `dotnet add package Novolis.Storage.Abstractions` | [README](https://github.com/Novolis-Platform/novolis-storage/blob/main/src/Novolis.Storage.Abstractions/README.md) |
 | `Novolis.Storage.InMemory` | `dotnet add package Novolis.Storage.InMemory` | [README](https://github.com/Novolis-Platform/novolis-storage/blob/main/src/Novolis.Storage.InMemory/README.md) |
 | `Novolis.Storage.Json` | `dotnet add package Novolis.Storage.Json` | [README](https://github.com/Novolis-Platform/novolis-storage/blob/main/src/Novolis.Storage.Json/README.md) |
@@ -54,7 +52,7 @@ For NuGet.org and Visual Studio, the **embedded** README.md inside each package 
 <!-- novolis-package-index:end -->
 # Storage
 
-Repository and event-journal abstractions with pluggable providers (JSON files, LiteDB, in-memory, SQLite) plus root-scoped file workspace helpers.
+Repository and event-journal abstractions with pluggable providers (JSON files, LiteDB, in-memory, SQLite).
 
 ## Packages
 
@@ -65,8 +63,6 @@ Repository and event-journal abstractions with pluggable providers (JSON files, 
 | `Novolis.Storage.LiteDb` | LiteDB document store |
 | `Novolis.Storage.InMemory` | In-memory repositories for tests |
 | `Novolis.Storage.Sqlite` | SQLite-backed repositories |
-| `Novolis.IO.Workspace` | Root-scoped file workspace (`IFileWorkspace`) |
-| `Novolis.IO.Workspace.Testing` | In-memory workspace for unit tests |
 
 ## Quick start
 

@@ -1,6 +1,6 @@
 # novolis-storage documentation
 
-Storage abstractions, in-memory/SQLite providers, and workspace IO.
+Storage abstractions and in-memory/SQLite providers.
 
 Published docs: [https://novolis-platform.github.io/.github/novolis-storage/](https://novolis-platform.github.io/.github/novolis-storage/)
 
@@ -16,8 +16,6 @@ Published docs: [https://novolis-platform.github.io/.github/novolis-storage/](ht
 
 | Package |
 | --- |
-| `Novolis.IO.Workspace` |
-| `Novolis.IO.Workspace.Testing` |
 | `Novolis.Storage.Abstractions` |
 | `Novolis.Storage.InMemory` |
 | `Novolis.Storage.Json` |

@@ -10,7 +10,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Novolis.Storage.Unit" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Novolis.IO.Workspace" />
     <ProjectReference Include="../Novolis.Storage.Abstractions/Novolis.Storage.Abstractions.csproj" />
-    <ProjectReference Include="../Novolis.IO.Workspace/Novolis.IO.Workspace.csproj" />
   </ItemGroup>
 </Project>
