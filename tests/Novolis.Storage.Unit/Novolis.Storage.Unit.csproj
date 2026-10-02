@@ -12,6 +12,7 @@
     <ProjectReference Include="../../src/Novolis.Storage.Abstractions/Novolis.Storage.Abstractions.csproj" />
     <ProjectReference Include="../../src/Novolis.Storage.InMemory/Novolis.Storage.InMemory.csproj" />
     <ProjectReference Include="../../src/Novolis.Storage.Json/Novolis.Storage.Json.csproj" />
+    <ProjectReference Include="../../src/Novolis.Storage.Ndjson/Novolis.Storage.Ndjson.csproj" />
     <ProjectReference Include="../../src/Novolis.Storage.LiteDb/Novolis.Storage.LiteDb.csproj" />
     <ProjectReference Include="../../src/Novolis.Storage.Sqlite/Novolis.Storage.Sqlite.csproj" />
   </ItemGroup>
