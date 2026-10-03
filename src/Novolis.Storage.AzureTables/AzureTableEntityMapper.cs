@@ -9,6 +9,7 @@ internal static class AzureTableEntityMapper
     public static TableEntity ToTable<T>(T entity) where T : class, IHasId
     {
         ArgumentNullException.ThrowIfNull(entity);
+        AzureTableValues.EnsureMappable(typeof(T));
         var row = new TableEntity(AzureTableKeys.Partition, AzureTableKeys.RowKey(entity.Id));
         foreach (var property in Cache<T>.Properties)
         {
@@ -24,6 +25,7 @@ internal static class AzureTableEntityMapper
 
     public static T ToObject<T>(TableEntity row) where T : class, IHasId
     {
+        AzureTableValues.EnsureMappable(typeof(T));
         var entity = Activator.CreateInstance<T>()
             ?? throw new InvalidOperationException($"Could not create an instance of {typeof(T).Name}.");
         if (Cache<T>.Id is null || !Cache<T>.Id.CanWrite)
@@ -47,6 +49,7 @@ internal static class AzureTableEntityMapper
 
         public static readonly PropertyInfo[] Properties = typeof(T)
             .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+            .Where(property => !AzureTableValues.IsReserved(property))
             .Where(AzureTableValues.IsStoredProperty)
             .ToArray();
     }

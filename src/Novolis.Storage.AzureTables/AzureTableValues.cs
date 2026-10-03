@@ -13,6 +13,23 @@ internal static class AzureTableValues
         "ETag",
     };
 
+    public static void EnsureMappable(Type type)
+    {
+        foreach (var property in type.GetProperties(BindingFlags.Instance | BindingFlags.Public))
+        {
+            if (property.GetIndexParameters().Length > 0 || !property.CanRead || !property.CanWrite)
+                continue;
+
+            if (property.Name == nameof(Abstractions.IHasId.Id))
+                continue;
+
+            if (Reserved.Contains(property.Name))
+                throw new NotSupportedException($"Property '{property.Name}' conflicts with an Azure Table system property.");
+        }
+    }
+
+    public static bool IsReserved(PropertyInfo property) => Reserved.Contains(property.Name);
+
     public static bool IsStoredProperty(PropertyInfo property)
     {
         if (property.GetIndexParameters().Length > 0 || !property.CanRead || !property.CanWrite)
