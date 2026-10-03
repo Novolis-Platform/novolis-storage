@@ -2,7 +2,8 @@
 
 Novolis storage provides a shared `IRepository<T>` abstraction with JSON,
 SQLite, in-memory, direct Azure Tables, and preview Azure Combined Storage
-implementations. Querying is an optional finite capability.
+implementations, plus direct typed Azure Blob containers. Querying is an
+optional finite capability.
 
 ## Prerequisites
 
@@ -46,6 +47,23 @@ var page = await repository
 The provider stores the published manifest in Azure Tables and immutable
 aggregate payloads in Azure Blobs. Indexes are derived state and can be
 rebuilt or repaired through `IAzureCombinedMaintenance<T>`.
+
+## Azure Blob containers
+
+```csharp
+services.AddStorage(builder => builder.AddAzureBlobStorage(options =>
+{
+    options.ConnectionString = connectionString;
+    options.ContainerName = "documents";
+}));
+
+var documents = serviceProvider.GetRequiredService<IBlobContainer<Document>>();
+await documents.UpsertAsync(document, cancellationToken);
+var stored = await documents.TryGetAsync(document.Name, cancellationToken);
+```
+
+`Document` implements `IHasName`. The name is the Azure blob name. This
+provider stores JSON directly in Blob Storage and has no query or index layer.
 
 ## See also
 

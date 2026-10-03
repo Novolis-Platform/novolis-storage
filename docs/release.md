@@ -4,6 +4,7 @@ Publish the packable storage packages together after the solution build, unit
 tests, coverage, and governance checks succeed:
 
 - `Novolis.Storage.Abstractions`
+- `Novolis.Storage.AzureBlob`
 - `Novolis.Storage.Query`
 - `Novolis.Storage.Indexing`
 - `Novolis.Storage.AzureCombinedStorage`
@@ -24,6 +25,7 @@ The new query/storage packages are gated at 100% line coverage and at least
 
 | Package | Line | Branch |
 | --- | ---: | ---: |
+| `Novolis.Storage.AzureBlob` | 100% | 96.6% |
 | `Novolis.Storage.Query` | 100% | 93.8% |
 | `Novolis.Storage.Indexing` | 100% | 98.8% |
 | `Novolis.Storage.AzureCombinedStorage` | 100% | 90.5% |

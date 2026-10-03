@@ -52,6 +52,7 @@ await eventStore.PublishAsync(stream, new { Kind = "joined" }, cancellationToken
 | Type | Role |
 |------|------|
 | `IHasId` | Entity marker: `Guid Id { get; }` |
+| `IHasName` | Named-value marker: `string Name { get; }` |
 | `IRepository<T>` | `All()`, `TryGetAsync`, `UpsertAsync`, `DeleteAsync` |
 | `IRepositoryProvider` | Backend hook: `Create<T>()` |
 | `IRepositoryFactory` | Resolves `IRepository<T>` from DI |
@@ -76,6 +77,7 @@ await eventStore.PublishAsync(stream, new { Kind = "joined" }, cancellationToken
 | Package | Role |
 |---------|------|
 | `Novolis.Storage.Json` | File-per-entity repositories |
+| `Novolis.Storage.AzureBlob` | Typed JSON blob containers keyed by `IHasName` |
 | `Novolis.Storage.LiteDb` | LiteDB repositories |
 | `Novolis.Storage.InMemory` | In-memory repositories |
 | `Novolis.Storage.Sqlite` | SQLite repositories |

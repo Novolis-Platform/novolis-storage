@@ -7,7 +7,8 @@ The longer proposed architecture is documented in
 
 | Package | Role |
 |---------|------|
-| `Novolis.Storage.Abstractions` | `IHasId`, `IRepository<T>`, DI registration helpers |
+| `Novolis.Storage.Abstractions` | `IHasId`, `IHasName`, `IRepository<T>`, DI registration helpers |
+| `Novolis.Storage.AzureBlob` | Direct typed JSON blob containers keyed by `IHasName.Name`; no Query or Index dependency |
 | `Novolis.Storage.Query` | Immutable finite query intent, capability discovery, and continuation |
 | `Novolis.Storage.Indexing` | Experimental revision-aware key encoding and query planning |
 | `Novolis.Storage.AzureCombinedStorage` | Preview aggregate storage over Azure Tables and Blobs |
@@ -17,7 +18,7 @@ The longer proposed architecture is documented in
 
 ## Entity model
 
-All stored types implement `IHasId` with a `Guid Id`. Display names for folders/tables come from the provider's type naming conventions.
+Repository entities implement `IHasId` with a `Guid Id`; typed Azure Blob values implement `IHasName` with a stable blob name. Display names for folders/tables come from the provider's type naming conventions.
 
 ## Trade-offs
 

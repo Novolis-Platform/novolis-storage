@@ -42,6 +42,7 @@
 | Package | Install | Package README |
 |---------|---------|----------------|
 | `Novolis.Storage.Abstractions` | `dotnet add package Novolis.Storage.Abstractions` | [README](https://github.com/Novolis-Platform/novolis-storage/blob/main/src/Novolis.Storage.Abstractions/README.md) |
+| `Novolis.Storage.AzureBlob` | `dotnet add package Novolis.Storage.AzureBlob` | [README](https://github.com/Novolis-Platform/novolis-storage/blob/main/src/Novolis.Storage.AzureBlob/README.md) |
 | `Novolis.Storage.AzureCombinedStorage` | `dotnet add package Novolis.Storage.AzureCombinedStorage` | [README](https://github.com/Novolis-Platform/novolis-storage/blob/main/src/Novolis.Storage.AzureCombinedStorage/README.md) |
 | `Novolis.Storage.AzureTables` | `dotnet add package Novolis.Storage.AzureTables` | [README](https://github.com/Novolis-Platform/novolis-storage/blob/main/src/Novolis.Storage.AzureTables/README.md) |
 | `Novolis.Storage.Indexing` | `dotnet add package Novolis.Storage.Indexing` | [README](https://github.com/Novolis-Platform/novolis-storage/blob/main/src/Novolis.Storage.Indexing/README.md) |
@@ -65,6 +66,7 @@ Repository and event-journal abstractions with pluggable providers (JSON files, 
 | Package | Description |
 |---------|-------------|
 | `Novolis.Storage.Abstractions` | `IRepository<T>`, event journal contracts, `AddStorage` |
+| `Novolis.Storage.AzureBlob` | Typed JSON blob containers keyed by `IHasName.Name` |
 | `Novolis.Storage.Query` | Provider-independent finite query model and continuation |
 | `Novolis.Storage.Indexing` | Experimental revision-aware index encoding and planning |
 | `Novolis.Storage.AzureCombinedStorage` | Preview Table/Blob aggregate storage with manifests and derived indexes |

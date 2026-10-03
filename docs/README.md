@@ -17,6 +17,7 @@ Published docs: [https://novolis-platform.github.io/.github/novolis-storage/](ht
 | Package |
 | --- |
 | `Novolis.Storage.Abstractions` |
+| `Novolis.Storage.AzureBlob` |
 | `Novolis.Storage.Query` |
 | `Novolis.Storage.Indexing` |
 | `Novolis.Storage.AzureCombinedStorage` |
