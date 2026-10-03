@@ -1,3 +1,4 @@
+using System.Collections;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Novolis.Storage.Abstractions;
@@ -97,6 +98,56 @@ public sealed class AzureTableRepositoryTests
 
         var byWhen = await CollectAsync(repo.QueryAsync(e => e.When == when));
         await Assert.That(byWhen.Select(row => row.Id).ToArray()).IsEquivalentTo(new[] { nastyId });
+    }
+
+    [Test]
+    public async Task Linq_query_pages_projects_and_stops()
+    {
+        RequireLocalAzurite();
+        using var host = await StartHostAsync(maxPerPage: 1);
+        var repo = host.Services.GetRequiredService<IRepository<AzureTableRecord>>();
+        foreach (var index in Enumerable.Range(0, 4))
+        {
+            await repo.UpsertAsync(new AzureTableRecord
+            {
+                Id = Guid.NewGuid(),
+                Name = "kept",
+                Active = true,
+                Count = index,
+            });
+        }
+
+        await repo.UpsertAsync(new AzureTableRecord { Id = Guid.NewGuid(), Name = "no", Active = false, Count = 9 });
+
+        var names = new List<string>();
+        foreach (var name in repo.Query().Where(row => row.Active).Where(row => row.Count >= 0).Take(3).Select(row => row.Name))
+            names.Add(name);
+
+        await Assert.That(names.Count).IsEqualTo(3);
+        await Assert.That(names.All(name => name == "kept")).IsTrue();
+
+        var all = new List<AzureTableRecord>();
+        await foreach (var row in repo.Query())
+            all.Add(row);
+        await Assert.That(all.Count).IsEqualTo(5);
+
+        var missing = new List<AzureTableRecord>();
+        await foreach (var row in repo.Query().Where(row => row.Name == "missing").Take(0))
+            missing.Add(row);
+        await Assert.That(missing.Count).IsEqualTo(0);
+
+        using var enumerator = ((IEnumerable)repo.Query().Where(row => row.Name == "no")).GetEnumerator();
+        await Assert.That(enumerator.MoveNext()).IsTrue();
+        await Assert.That(((AzureTableRecord)enumerator.Current!).Name).IsEqualTo("no");
+    }
+
+    [Test]
+    public async Task Upsert_null_is_rejected_before_the_service()
+    {
+        var repo = new AzureTableRepository<AzureTableRecord>(
+            new TableServiceClient("UseDevelopmentStorage=true"),
+            new AzureTableOptions { ConnectionString = "UseDevelopmentStorage=true" });
+        await Assert.That(() => repo.UpsertAsync(null!)).Throws<ArgumentNullException>();
     }
 
     [Test]

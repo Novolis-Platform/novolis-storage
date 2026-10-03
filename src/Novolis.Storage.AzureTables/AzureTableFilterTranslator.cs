@@ -42,18 +42,19 @@ internal static class AzureTableFilterTranslator
             case MethodCallExpression call:
                 if (TryEquals(call, out var equalsMember, out var equalsValue))
                     return Format(equalsMember, "eq", Evaluate(equalsValue));
-                throw new NotSupportedException(
-                    $"Azure Table Storage has no server-side '{call.Method.Name}' operator. The query was rejected so it is not applied to a partial page of results.");
+                throw Reject(call.Method.Name);
             default:
-                throw new NotSupportedException(
-                    $"Azure Table Storage cannot evaluate this query server-side ({node.NodeType}). Supported filters are comparisons, and, or, and not.");
+                throw Reject(node.NodeType.ToString());
         }
     }
 
     private static string Comparison(BinaryExpression binary)
     {
         if (!TrySplit(binary, out var member, out var valueExpression, out var flipped))
-            throw new NotSupportedException("Azure Table filters must compare a stored property to a value.");
+            throw Reject("comparison");
+
+        if (Unwrap(valueExpression) is MemberExpression other && IsEntityMember(other))
+            throw Reject("property comparison");
 
         return Format(member, Operator(binary.NodeType, flipped), Evaluate(valueExpression));
     }
@@ -61,18 +62,17 @@ internal static class AzureTableFilterTranslator
     private static string Format(MemberExpression member, string op, object? value)
     {
         if (member.Member is not PropertyInfo property)
-            throw new NotSupportedException("Azure Table queries can only filter on properties.");
+            throw Reject("field");
 
         if (value is null)
-            throw new NotSupportedException("Azure Table Storage does not support null comparisons.");
+            throw Reject("null comparison");
 
         if (property.Name == nameof(Abstractions.IHasId.Id))
         {
             var rowKey = value switch
             {
                 Guid id => AzureTableKeys.RowKey(id),
-                _ => Convert.ToString(value, CultureInfo.InvariantCulture)
-                    ?? throw new NotSupportedException("Id comparisons must be a Guid or string."),
+                _ => Convert.ToString(value, CultureInfo.InvariantCulture) ?? string.Empty,
             };
             return FormatColumn("RowKey", op, rowKey);
         }
@@ -189,7 +189,7 @@ internal static class AzureTableFilterTranslator
         ExpressionType.LessThan or
         ExpressionType.LessThanOrEqual;
 
-    private static string Operator(ExpressionType type, bool flipped) => (type, flipped) switch
+    internal static string Operator(ExpressionType type, bool flipped) => (type, flipped) switch
     {
         (ExpressionType.Equal, _) => "eq",
         (ExpressionType.NotEqual, _) => "ne",
@@ -201,6 +201,9 @@ internal static class AzureTableFilterTranslator
         (ExpressionType.LessThan, true) => "gt",
         (ExpressionType.LessThanOrEqual, false) => "le",
         (ExpressionType.LessThanOrEqual, true) => "ge",
-        _ => throw new NotSupportedException($"Azure Table Storage cannot evaluate operator {type}."),
+        _ => throw Reject(type.ToString()),
     };
+
+    internal static NotSupportedException Reject(string name) =>
+        new($"{name} cannot be translated to Azure Table Storage. Client-side evaluation is not performed.");
 }

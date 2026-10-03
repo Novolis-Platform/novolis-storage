@@ -9,7 +9,13 @@ public sealed class AzureTableNamesTests
     {
         await Assert.That(AzureTableNames.FromIdentity("OkName")).IsEqualTo("OkName");
         await Assert.That(AzureTableNames.FromIdentity("A")).IsEqualTo("Axx");
+        await Assert.That(AzureTableNames.FromIdentity("ab")).IsEqualTo("abx");
+        await Assert.That(AzureTableNames.FromIdentity("")).IsEqualTo("Txx");
+        await Assert.That(AzureTableNames.FromIdentity("1")).IsEqualTo("T1x");
         await Assert.That(AzureTableNames.FromIdentity("9ab")).IsEqualTo("T9ab");
+        await Assert.That(AzureTableNames.ForType(typeof(AzureTableRecord), null)).Contains(nameof(AzureTableRecord));
+        await Assert.That(AzureTableNames.ForType(typeof(AzureTableRecord), "  ")).Contains(nameof(AzureTableRecord));
+        await Assert.That(AzureTableNames.ForType(typeof(AzureTableRecord), "pre")).StartsWith("pre");
     }
 
     [Test]

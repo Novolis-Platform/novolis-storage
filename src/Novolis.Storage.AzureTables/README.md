@@ -28,10 +28,10 @@ services.AddStorage(builder => builder.AddAzureTableProvider(o =>
     o.ConnectionString = connectionString;
 }));
 
-var repo = sp.GetRequiredService<IAzureTableRepository<MyEntity>>();
+var repo = sp.GetRequiredService<IRepository<MyEntity>>();
 await repo.UpsertAsync(entity, cancellationToken);
 
-await foreach (var match in repo.QueryAsync(e => e.Name == "Ada" && e.Active, cancellationToken))
+await foreach (var name in repo.Query().Where(e => e.Active).Select(e => e.Name))
 {
 }
 ```
@@ -40,9 +40,9 @@ Entity types must implement `IHasId` and have a parameterless constructor. Store
 
 ## Queries
 
-`TryGetAsync` is a point read on `PartitionKey` + `RowKey`. `QueryAsync` and `All` always include `PartitionKey eq 'row'` and follow continuation tokens, so a page size never truncates the result.
+`Query()` on `IRepository<T>` returns `IAzureTableQuery<T>` (`IQueryable<T>` and `IAsyncEnumerable<T>`). `Where` and `Select` are translated to OData `filter` and `select` when the operator is applied. `Take` stops the paged stream. `OrderBy`, `Skip`, `Contains`, and `StartsWith` throw `NotSupportedException` — nothing is evaluated on the client.
 
-`TableClient.CreateQueryFilter` formats values. Row keys are compared as strings (`RowKey eq '...'`), not `guid'...'`. String quotes are escaped. `Contains`, `StartsWith`, and null comparisons throw `NotSupportedException` instead of running against one page.
+`TryGetAsync` is a point read on `PartitionKey` + `RowKey`. Queries always include `PartitionKey eq 'row'` and follow continuation tokens. Row keys are strings, not `guid'...'`.
 
 ## API
 
@@ -50,7 +50,8 @@ Entity types must implement `IHasId` and have a parameterless constructor. Store
 |------|------|
 | `AzureTableOptions` | `ConnectionString`, `TablePrefix`, `MaxPerPage` |
 | `AzureTableStorageExtensions.AddAzureTableProvider` | Registers `TableServiceClient`, `IRepository<>`, `IAzureTableRepository<>` |
-| `IAzureTableRepository<T>.QueryAsync` | Server-side OData filter with full paging |
+| `AzureTableRepositoryExtensions.Query` | `IRepository<T>` extension that starts an `IAzureTableQuery<T>` |
+| `IAzureTableQuery<T>` | `Where`, `Select`, and `Take` translated to Table Storage; `await foreach` to read |
 
 `AddStorage` (from Abstractions) also registers `IIdProvider` → `GuidV7IdProvider` and `IRepositoryFactory`.
 

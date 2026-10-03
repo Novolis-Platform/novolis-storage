@@ -61,21 +61,34 @@ internal sealed class AzureTableRepository<T> : IAzureTableRepository<T> where T
         return QueryCoreAsync(predicate, cancellationToken);
     }
 
+    internal IAzureTableQuery<T> CreateQuery() =>
+        new AzureTableQuery<T>(new AzureTableQueryProvider(QueryRowsAsync, AzureTableEntityMapper.ToObject<T>), expression: null);
+
     private async IAsyncEnumerable<T> QueryCoreAsync(
         Expression<Func<T, bool>>? predicate,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var table = await GetTableAsync(cancellationToken).ConfigureAwait(false);
         var filter = predicate is null
             ? AzureTableFilterTranslator.PartitionOnly()
             : AzureTableFilterTranslator.WithPartition(predicate);
 
+        await foreach (var row in QueryRowsAsync(filter, select: null, cancellationToken).ConfigureAwait(false))
+            yield return AzureTableEntityMapper.ToObject<T>(row);
+    }
+
+    private async IAsyncEnumerable<TableEntity> QueryRowsAsync(
+        string filter,
+        IReadOnlyList<string>? select,
+        [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        var table = await GetTableAsync(cancellationToken).ConfigureAwait(false);
         await foreach (var row in table.QueryAsync<TableEntity>(
             filter: filter,
             maxPerPage: _options.MaxPerPage,
+            select: select,
             cancellationToken: cancellationToken).ConfigureAwait(false))
         {
-            yield return AzureTableEntityMapper.ToObject<T>(row);
+            yield return row;
         }
     }
 

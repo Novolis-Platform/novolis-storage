@@ -31,7 +31,7 @@ internal static class AzureTableValues
     {
         var type = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
         if (type.IsEnum)
-            return Enum.GetName(type, value) ?? value.ToString() ?? throw new InvalidOperationException($"Cannot store enum {type.Name}.");
+            return Enum.GetName(type, value) ?? value.ToString()!;
 
         return type switch
         {
