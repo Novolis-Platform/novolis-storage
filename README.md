@@ -52,13 +52,14 @@ For NuGet.org and Visual Studio, the **embedded** README.md inside each package 
 <!-- novolis-package-index:end -->
 # Storage
 
-Repository and event-journal abstractions with pluggable providers (JSON files, LiteDB, in-memory, SQLite).
+Repository and event-journal abstractions with pluggable providers (JSON files, LiteDB, in-memory, SQLite, Azure Table Storage).
 
 ## Packages
 
 | Package | Description |
 |---------|-------------|
 | `Novolis.Storage.Abstractions` | `IRepository<T>`, event journal contracts, `AddStorage` |
+| `Novolis.Storage.AzureTables` | Azure Table Storage repositories and OData queries |
 | `Novolis.Storage.Json` | File-per-entity JSON repositories |
 | `Novolis.Storage.LiteDb` | LiteDB document store |
 | `Novolis.Storage.InMemory` | In-memory repositories for tests |

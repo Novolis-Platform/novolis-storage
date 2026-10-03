@@ -15,7 +15,9 @@
     <PackageVersion Include="Microsoft.Extensions.FileProviders.Physical" Version="10.0.12" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.12" />
     <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.12" />
+    <PackageVersion Include="Azure.Data.Tables" Version="12.11.0" />
     <PackageVersion Include="LiteDB" Version="5.0.21" />
+    <PackageVersion Include="Testcontainers.Azurite" Version="4.15.0" />
     <PackageVersion Include="Novolis.IO.Workspace" Version="2026.1.*" />
     <PackageVersion Include="Novolis.IO.Workspace.Testing" Version="2026.1.*" />
     <PackageVersion Include="TUnit" Version="1.72.4" />

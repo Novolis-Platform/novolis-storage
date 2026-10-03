@@ -4,6 +4,10 @@
       "project": "src/Novolis.Storage.Abstractions/Novolis.Storage.Abstractions.csproj",
       "paths": ["src/Novolis.Storage.Abstractions/**", "Novolis.Storage.slnx"]
     },
+    "Novolis.Storage.AzureTables": {
+      "project": "src/Novolis.Storage.AzureTables/Novolis.Storage.AzureTables.csproj",
+      "paths": ["src/Novolis.Storage.AzureTables/**", "src/Novolis.Storage.Abstractions/**"]
+    },
     "Novolis.Storage.InMemory": {
       "project": "src/Novolis.Storage.InMemory/Novolis.Storage.InMemory.csproj",
       "paths": ["src/Novolis.Storage.InMemory/**", "src/Novolis.Storage.Abstractions/**"]

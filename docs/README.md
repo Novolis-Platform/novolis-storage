@@ -17,6 +17,7 @@ Published docs: [https://novolis-platform.github.io/.github/novolis-storage/](ht
 | Package |
 | --- |
 | `Novolis.Storage.Abstractions` |
+| `Novolis.Storage.AzureTables` |
 | `Novolis.Storage.InMemory` |
 | `Novolis.Storage.Json` |
 | `Novolis.Storage.LiteDb` |

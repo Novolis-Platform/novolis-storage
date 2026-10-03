@@ -5,6 +5,7 @@
 | Package | Role |
 |---------|------|
 | `Novolis.Storage.Abstractions` | `IKeyed`, `IRepository<T>`, DI registration helpers |
+| `Novolis.Storage.AzureTables` | Azure Table rows; `Id` is the row key and queries are paged OData filters |
 | `Novolis.Storage.Json` | One JSON file per entity under a type folder |
 | `Novolis.Storage.Sqlite` | SQLite tables created from entity shape |
 

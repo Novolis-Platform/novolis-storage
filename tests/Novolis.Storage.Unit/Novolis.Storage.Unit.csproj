@@ -9,7 +9,9 @@
     <LibraryReference Include="Novolis.IO.Workspace" />
     <LibraryReference Include="Novolis.IO.Workspace.Testing" />
     <PackageReference Include="TUnit" />
+    <PackageReference Include="Testcontainers.Azurite" />
     <ProjectReference Include="../../src/Novolis.Storage.Abstractions/Novolis.Storage.Abstractions.csproj" />
+    <ProjectReference Include="../../src/Novolis.Storage.AzureTables/Novolis.Storage.AzureTables.csproj" />
     <ProjectReference Include="../../src/Novolis.Storage.InMemory/Novolis.Storage.InMemory.csproj" />
     <ProjectReference Include="../../src/Novolis.Storage.Json/Novolis.Storage.Json.csproj" />
     <ProjectReference Include="../../src/Novolis.Storage.Ndjson/Novolis.Storage.Ndjson.csproj" />
