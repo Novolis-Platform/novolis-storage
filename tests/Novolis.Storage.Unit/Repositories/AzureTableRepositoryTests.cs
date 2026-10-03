@@ -1,4 +1,4 @@
-using System.Collections;
+using Azure.Data.Tables;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Novolis.Storage.Abstractions;
@@ -132,11 +132,16 @@ public sealed class AzureTableRepositoryTests
         await Assert.That(all.Count).IsEqualTo(5);
 
         var missing = new List<AzureTableRecord>();
-        await foreach (var row in repo.Query().Where(row => row.Name == "missing").Take(0))
+        await foreach (var row in repo.Query().Where(row => row.Name == "missing"))
             missing.Add(row);
         await Assert.That(missing.Count).IsEqualTo(0);
 
-        using var enumerator = ((IEnumerable)repo.Query().Where(row => row.Name == "no")).GetEnumerator();
+        var stopped = new List<AzureTableRecord>();
+        await foreach (var row in repo.Query().Take(0))
+            stopped.Add(row);
+        await Assert.That(stopped.Count).IsEqualTo(0);
+
+        using var enumerator = repo.Query().Where(row => row.Name == "no").GetEnumerator();
         await Assert.That(enumerator.MoveNext()).IsTrue();
         await Assert.That(((AzureTableRecord)enumerator.Current!).Name).IsEqualTo("no");
     }
@@ -147,7 +152,7 @@ public sealed class AzureTableRepositoryTests
         var repo = new AzureTableRepository<AzureTableRecord>(
             new TableServiceClient("UseDevelopmentStorage=true"),
             new AzureTableOptions { ConnectionString = "UseDevelopmentStorage=true" });
-        await Assert.That(() => repo.UpsertAsync(null!)).Throws<ArgumentNullException>();
+        await Assert.That(async () => await repo.UpsertAsync(null!)).Throws<ArgumentNullException>();
     }
 
     [Test]

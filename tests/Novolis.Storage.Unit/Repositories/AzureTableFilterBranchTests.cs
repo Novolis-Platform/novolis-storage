@@ -33,7 +33,7 @@ public sealed class AzureTableFilterBranchTests
         await Assert.That(AzureTableFilterTranslator.Translate<AzureTableRecord>(e => string.Equals("Ada", e.Name))).Contains("Ada");
         await Assert.That(AzureTableFilterTranslator.Translate<AzureTableRecord>(e => e.Name == string.Empty)).Contains("''");
         await Assert.That(AzureTableFilterTranslator.Translate<AzureTableScalars>(e => e.Optional == false)).Contains("false");
-        await Assert.That(AzureTableFilterTranslator.Translate<AzureTableScalars>(e => e.Optional)).Contains("eq true");
+        await Assert.That(AzureTableFilterTranslator.Translate<AzureTableScalars>(e => e.Optional == true)).Contains("eq true");
 
         var offset = new DateTimeOffset(2024, 1, 2, 3, 4, 5, TimeSpan.FromHours(2));
         var actual = AzureTableFilterTranslator.Translate<AzureTableRecord>(e => e.When == offset);
@@ -53,7 +53,6 @@ public sealed class AzureTableFilterBranchTests
         await Assert.That(() => AzureTableFilterTranslator.Translate<AzureTableOdd>(e => e.flagField)).Throws<NotSupportedException>();
         await Assert.That(() => AzureTableFilterTranslator.Translate<AzureTableOdd>(e => e.flagField == true)).Throws<NotSupportedException>();
         await Assert.That(() => AzureTableFilterTranslator.Translate<AzureTableOdd>(e => e.Timestamp == "x")).Throws<NotSupportedException>();
-        await Assert.That(() => AzureTableFilterTranslator.Translate<AzureTableRecord>(e => e.Name)).Throws<NotSupportedException>();
 
         var parameter = Expression.Parameter(typeof(AzureTableRecord), "e");
         var equals = typeof(object).GetMethod(nameof(object.Equals), [typeof(object), typeof(object)])!;

@@ -15,8 +15,8 @@ public sealed class AzureTableValuesTests
         var offset = new DateTimeOffset(2024, 2, 3, 4, 5, 6, TimeSpan.FromHours(2));
 
         await Assert.That(AzureTableValues.Normalize(typeof(string), "Ada")).IsEqualTo("Ada");
-        await Assert.That(AzureTableValues.Normalize(typeof(bool), true)).IsEqualTo(true);
-        await Assert.That(AzureTableValues.Normalize(typeof(bool?), false)).IsEqualTo(false);
+        await Assert.That((bool)AzureTableValues.Normalize(typeof(bool), true)).IsTrue();
+        await Assert.That((bool)AzureTableValues.Normalize(typeof(bool?), false)).IsFalse();
         await Assert.That(AzureTableValues.Normalize(typeof(byte), (byte)2)).IsEqualTo(2);
         await Assert.That(AzureTableValues.Normalize(typeof(sbyte), (sbyte)-3)).IsEqualTo(-3);
         await Assert.That(AzureTableValues.Normalize(typeof(short), (short)4)).IsEqualTo(4);
@@ -37,7 +37,7 @@ public sealed class AzureTableValuesTests
 
         await Assert.That(AzureTableValues.Read(typeof(string), "Ada")).IsEqualTo("Ada");
         await Assert.That(AzureTableValues.Read(typeof(string), null!)).IsEqualTo(string.Empty);
-        await Assert.That(AzureTableValues.Read(typeof(bool), "true")).IsEqualTo(true);
+        await Assert.That((bool)AzureTableValues.Read(typeof(bool), "true")).IsTrue();
         await Assert.That(AzureTableValues.Read(typeof(byte), "2")).IsEqualTo((byte)2);
         await Assert.That(AzureTableValues.Read(typeof(sbyte), -3)).IsEqualTo((sbyte)-3);
         await Assert.That(AzureTableValues.Read(typeof(short), 4)).IsEqualTo((short)4);
