@@ -32,7 +32,10 @@ public static class JsonStorageExtensions
         builder.Services.AddKeyedSingleton<IFileWorkspace>(JsonStorageWorkspaceKey.Default, (_, _) => workspace);
         builder.Services.AddSingleton(options);
         if (processLock != null)
-            builder.Services.AddSingleton(processLock);
+        {
+            var lockInstance = processLock;
+            builder.Services.AddSingleton<JsonFilesProcessLock>(_ => new JsonFilesProcessLock(lockInstance));
+        }
         builder.Services.AddSingleton<IRepositoryProvider, JsonFilesRepositoryProvider>();
         builder.Services.AddTransient(typeof(IRepository<>), typeof(JsonFilesRepository<>));
 

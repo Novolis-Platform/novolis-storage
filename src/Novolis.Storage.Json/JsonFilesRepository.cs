@@ -15,10 +15,12 @@ internal sealed class JsonFilesRepository<T> : IRepository<T> where T : class, I
 
     public JsonFilesRepository(
         JsonFilesOptions options,
-        [FromKeyedServices(JsonStorageWorkspaceKey.Default)] IFileWorkspace workspace)
+        [FromKeyedServices(JsonStorageWorkspaceKey.Default)] IFileWorkspace workspace,
+        JsonFilesProcessLock? processLock = null)
     {
         _options = options;
         _workspace = workspace;
+        _ = processLock;
         _jsonOptions = options.JsonSerializerOptions;
         _typeDir = Path.Combine(_options.RootPath, typeof(T).Name);
         _stripes = new SemaphoreSlim[Math.Max(1, _options.LockStripes)];
