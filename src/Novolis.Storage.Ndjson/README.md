@@ -12,6 +12,16 @@ Typed append-oriented NDJSON storage for local journals, ledgers, and telemetry.
 This package adds store behavior: typed serialization, tolerant sequential
 reads, per-instance write coordination, and atomic whole-file replacement.
 
+## Install
+
+```powershell
+dotnet add package Novolis.Storage.Ndjson
+```
+
+Requires .NET 10 and `Novolis.IO.Ndjson`.
+
+## Quick start
+
 ```csharp
 using Novolis.Storage.Ndjson;
 
