@@ -11,6 +11,7 @@
     <PackageReference Include="TUnit" />
     <PackageReference Include="Testcontainers.Azurite" />
     <ProjectReference Include="../../src/Novolis.Storage.Abstractions/Novolis.Storage.Abstractions.csproj" />
+    <ProjectReference Include="../../src/Novolis.Storage.AzureBlob/Novolis.Storage.AzureBlob.csproj" />
     <ProjectReference Include="../../src/Novolis.Storage.AzureCombinedStorage/Novolis.Storage.AzureCombinedStorage.csproj" />
     <ProjectReference Include="../../src/Novolis.Storage.AzureTables/Novolis.Storage.AzureTables.csproj" />
     <ProjectReference Include="../../src/Novolis.Storage.Indexing/Novolis.Storage.Indexing.csproj" />

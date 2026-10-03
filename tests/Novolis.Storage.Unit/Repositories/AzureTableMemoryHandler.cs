@@ -17,7 +17,7 @@ internal sealed class AzureTableMemoryHandler : HttpMessageHandler
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         if (DelayRequests)
-            await Task.Yield();
+            await Task.Delay(10, cancellationToken).ConfigureAwait(false);
 
         var uri = request.RequestUri ?? throw new InvalidOperationException("Missing request URI.");
         var path = Uri.UnescapeDataString(uri.AbsolutePath);
