@@ -2,6 +2,9 @@
   <Folder Name="/src/">
     <Project Path="src/Novolis.Storage.Abstractions/Novolis.Storage.Abstractions.csproj" />
     <Project Path="src/Novolis.Storage.AzureTables/Novolis.Storage.AzureTables.csproj" />
+    <Project Path="src/Novolis.Storage.AzureCombinedStorage/Novolis.Storage.AzureCombinedStorage.csproj" />
+    <Project Path="src/Novolis.Storage.Indexing/Novolis.Storage.Indexing.csproj" />
+    <Project Path="src/Novolis.Storage.Query/Novolis.Storage.Query.csproj" />
     <Project Path="src/Novolis.Storage.InMemory/Novolis.Storage.InMemory.csproj" />
     <Project Path="src/Novolis.Storage.Json/Novolis.Storage.Json.csproj" />
     <Project Path="src/Novolis.Storage.Ndjson/Novolis.Storage.Ndjson.csproj" />

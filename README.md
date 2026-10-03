@@ -11,7 +11,7 @@
 
 <p align="center">
   <strong>Storage and persistence</strong><br/>
-  Storage abstractions and in-memory/SQLite providers.
+  Storage abstractions, finite queries, and Table/Blob aggregate providers.
 </p>
 
 <p align="center">
@@ -35,30 +35,39 @@
 <!-- novolis-marketing:end -->
 <!-- novolis-package-index:start -->
 > **GitHub Packages shows this repository README on every package page** (upstream limitation).
-> Open the **package README** for install and quick start — embedded in each .nupkg and linked below.
+> Open the **package README** for install and quick start — embedded in each `.nupkg` and linked below.
 
 ## Published packages
 
 | Package | Install | Package README |
 |---------|---------|----------------|
 | `Novolis.Storage.Abstractions` | `dotnet add package Novolis.Storage.Abstractions` | [README](https://github.com/Novolis-Platform/novolis-storage/blob/main/src/Novolis.Storage.Abstractions/README.md) |
+| `Novolis.Storage.AzureCombinedStorage` | `dotnet add package Novolis.Storage.AzureCombinedStorage` | [README](https://github.com/Novolis-Platform/novolis-storage/blob/main/src/Novolis.Storage.AzureCombinedStorage/README.md) |
+| `Novolis.Storage.AzureTables` | `dotnet add package Novolis.Storage.AzureTables` | [README](https://github.com/Novolis-Platform/novolis-storage/blob/main/src/Novolis.Storage.AzureTables/README.md) |
+| `Novolis.Storage.Indexing` | `dotnet add package Novolis.Storage.Indexing` | [README](https://github.com/Novolis-Platform/novolis-storage/blob/main/src/Novolis.Storage.Indexing/README.md) |
 | `Novolis.Storage.InMemory` | `dotnet add package Novolis.Storage.InMemory` | [README](https://github.com/Novolis-Platform/novolis-storage/blob/main/src/Novolis.Storage.InMemory/README.md) |
 | `Novolis.Storage.Json` | `dotnet add package Novolis.Storage.Json` | [README](https://github.com/Novolis-Platform/novolis-storage/blob/main/src/Novolis.Storage.Json/README.md) |
 | `Novolis.Storage.LiteDb` | `dotnet add package Novolis.Storage.LiteDb` | [README](https://github.com/Novolis-Platform/novolis-storage/blob/main/src/Novolis.Storage.LiteDb/README.md) |
+| `Novolis.Storage.Ndjson` | `dotnet add package Novolis.Storage.Ndjson` | [README](https://github.com/Novolis-Platform/novolis-storage/blob/main/src/Novolis.Storage.Ndjson/README.md) |
+| `Novolis.Storage.Query` | `dotnet add package Novolis.Storage.Query` | [README](https://github.com/Novolis-Platform/novolis-storage/blob/main/src/Novolis.Storage.Query/README.md) |
 | `Novolis.Storage.Sqlite` | `dotnet add package Novolis.Storage.Sqlite` | [README](https://github.com/Novolis-Platform/novolis-storage/blob/main/src/Novolis.Storage.Sqlite/README.md) |
 
-For NuGet.org and Visual Studio, the **embedded** README.md inside each package is authoritative.
+For NuGet.org and Visual Studio, the **embedded** `README.md` inside each package is authoritative.
 
 <!-- novolis-package-index:end -->
+
 # Storage
 
-Repository and event-journal abstractions with pluggable providers (JSON files, LiteDB, in-memory, SQLite, Azure Table Storage).
+Repository and event-journal abstractions with pluggable providers (JSON files, LiteDB, in-memory, SQLite, direct Azure Tables, and preview Azure Combined Storage).
 
 ## Packages
 
 | Package | Description |
 |---------|-------------|
 | `Novolis.Storage.Abstractions` | `IRepository<T>`, event journal contracts, `AddStorage` |
+| `Novolis.Storage.Query` | Provider-independent finite query model and continuation |
+| `Novolis.Storage.Indexing` | Experimental revision-aware index encoding and planning |
+| `Novolis.Storage.AzureCombinedStorage` | Preview Table/Blob aggregate storage with manifests and derived indexes |
 | `Novolis.Storage.AzureTables` | Azure Table Storage repositories and OData queries |
 | `Novolis.Storage.Json` | File-per-entity JSON repositories |
 | `Novolis.Storage.LiteDb` | LiteDB document store |
@@ -85,4 +94,3 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 ## Security
 
 See [SECURITY.md](SECURITY.md).
-

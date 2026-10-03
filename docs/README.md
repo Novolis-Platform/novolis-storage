@@ -1,6 +1,6 @@
 # novolis-storage documentation
 
-Storage abstractions and in-memory/SQLite providers.
+Storage abstractions, finite queries, and Table/Blob aggregate providers.
 
 Published docs: [https://novolis-platform.github.io/.github/novolis-storage/](https://novolis-platform.github.io/.github/novolis-storage/)
 
@@ -17,6 +17,9 @@ Published docs: [https://novolis-platform.github.io/.github/novolis-storage/](ht
 | Package |
 | --- |
 | `Novolis.Storage.Abstractions` |
+| `Novolis.Storage.Query` |
+| `Novolis.Storage.Indexing` |
+| `Novolis.Storage.AzureCombinedStorage` |
 | `Novolis.Storage.AzureTables` |
 | `Novolis.Storage.InMemory` |
 | `Novolis.Storage.Json` |

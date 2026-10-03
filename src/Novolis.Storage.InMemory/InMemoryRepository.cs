@@ -1,12 +1,16 @@
 using System.Collections.Concurrent;
 using Novolis.Storage.Abstractions;
+using Novolis.Storage.Query;
 
 namespace Novolis.Storage.InMemory;
 
 /// <summary>
 /// Thread-safe in-memory <see cref="IRepository{T}"/> backed by <see cref="ConcurrentDictionary{Guid,T}"/>.
 /// </summary>
-internal sealed class InMemoryRepository<T>(IInMemoryStore store) : IRepository<T> where T : class, IHasId
+internal sealed class InMemoryRepository<T>(IInMemoryStore store) :
+    IRepository<T>,
+    IRepositoryQueryProvider<T>
+    where T : class, IHasId
 {
     private readonly ConcurrentDictionary<Guid, T> _dict = store.GetOrAddDictionary<T>();
 
@@ -28,4 +32,10 @@ internal sealed class InMemoryRepository<T>(IInMemoryStore store) : IRepository<
     {
         return ValueTask.FromResult(_dict.TryRemove(id, out _));
     }
+
+    public ValueTask<QueryPage<T>> ExecuteAsync(Query<T> query, CancellationToken cancellationToken = default) =>
+        InMemoryQueryExecutor.ExecuteAsync(_dict.Values, query, cancellationToken);
+
+    public ValueTask<long> CountAsync(Query<T> query, CancellationToken cancellationToken = default) =>
+        InMemoryQueryExecutor.CountAsync(_dict.Values, query, cancellationToken);
 }

@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageId>Novolis.Storage.AzureCombinedStorage</PackageId>
+    <Description>Preview aggregate storage over Azure Table Storage and Azure Blob Storage.</Description>
+    <IsPackable>true</IsPackable>
+    <RootNamespace>Novolis.Storage.AzureCombinedStorage</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Azure.Data.Tables" />
+    <PackageReference Include="Azure.Storage.Blobs" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <ProjectReference Include="../Novolis.Storage.Abstractions/Novolis.Storage.Abstractions.csproj" />
+    <ProjectReference Include="../Novolis.Storage.Indexing/Novolis.Storage.Indexing.csproj" />
+    <ProjectReference Include="../Novolis.Storage.Query/Novolis.Storage.Query.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Novolis.Storage.Unit" />
+  </ItemGroup>
+</Project>

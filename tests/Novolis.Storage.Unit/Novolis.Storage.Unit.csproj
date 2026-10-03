@@ -11,11 +11,14 @@
     <PackageReference Include="TUnit" />
     <PackageReference Include="Testcontainers.Azurite" />
     <ProjectReference Include="../../src/Novolis.Storage.Abstractions/Novolis.Storage.Abstractions.csproj" />
+    <ProjectReference Include="../../src/Novolis.Storage.AzureCombinedStorage/Novolis.Storage.AzureCombinedStorage.csproj" />
     <ProjectReference Include="../../src/Novolis.Storage.AzureTables/Novolis.Storage.AzureTables.csproj" />
+    <ProjectReference Include="../../src/Novolis.Storage.Indexing/Novolis.Storage.Indexing.csproj" />
     <ProjectReference Include="../../src/Novolis.Storage.InMemory/Novolis.Storage.InMemory.csproj" />
     <ProjectReference Include="../../src/Novolis.Storage.Json/Novolis.Storage.Json.csproj" />
     <ProjectReference Include="../../src/Novolis.Storage.Ndjson/Novolis.Storage.Ndjson.csproj" />
     <ProjectReference Include="../../src/Novolis.Storage.LiteDb/Novolis.Storage.LiteDb.csproj" />
     <ProjectReference Include="../../src/Novolis.Storage.Sqlite/Novolis.Storage.Sqlite.csproj" />
+    <ProjectReference Include="../../src/Novolis.Storage.Query/Novolis.Storage.Query.csproj" />
   </ItemGroup>
 </Project>

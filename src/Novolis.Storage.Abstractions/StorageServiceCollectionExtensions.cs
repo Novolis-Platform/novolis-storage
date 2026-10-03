@@ -19,6 +19,8 @@ public static class StorageServiceCollectionExtensions
         this IServiceCollection services,
         Action<IStorageBuilder> configure)
     {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(configure);
         services.TryAddSingleton<IIdProvider, GuidV7IdProvider>();
         services.TryAddSingleton<IRepositoryFactory, RepositoryFactory>();
 

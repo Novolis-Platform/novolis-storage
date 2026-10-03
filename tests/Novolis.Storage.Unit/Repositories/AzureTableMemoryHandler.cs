@@ -8,10 +8,17 @@ namespace Novolis.Storage.Unit.Repositories;
 /// <summary>In-process Azure Table REST stand-in so repository tests do not need Docker.</summary>
 internal sealed class AzureTableMemoryHandler : HttpMessageHandler
 {
+    public bool DelayRequests { get; set; }
+
     private readonly Dictionary<string, Dictionary<string, string>> _tables = new(StringComparer.OrdinalIgnoreCase);
+    private readonly HashSet<string> _containers = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, byte[]> _blobs = new(StringComparer.Ordinal);
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
+        if (DelayRequests)
+            await Task.Yield();
+
         var uri = request.RequestUri ?? throw new InvalidOperationException("Missing request URI.");
         var path = Uri.UnescapeDataString(uri.AbsolutePath);
         var body = request.Content is null
@@ -19,8 +26,14 @@ internal sealed class AzureTableMemoryHandler : HttpMessageHandler
             : await request.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
         var query = ParseQuery(uri.Query);
 
+        if (uri.Host.Contains(".blob.", StringComparison.OrdinalIgnoreCase))
+            return await BlobAsync(request, path, query, cancellationToken).ConfigureAwait(false);
+
         if (request.Method == HttpMethod.Post && path.EndsWith("/Tables", StringComparison.OrdinalIgnoreCase))
             return CreateTable(body);
+
+        if (request.Method == HttpMethod.Post && TryParseEntityCollection(path, out var insertTable))
+            return InsertEntity(insertTable, body);
 
         if (TryParseEntity(path, out var table, out var partition, out var row))
             return Entity(request.Method, table, partition, row, body);
@@ -29,6 +42,112 @@ internal sealed class AzureTableMemoryHandler : HttpMessageHandler
             return Query(table, query);
 
         return Error(HttpStatusCode.BadRequest, "Unsupported", request.Method + " " + uri + " " + body);
+    }
+
+    private HttpResponseMessage InsertEntity(string table, string body)
+    {
+        using var document = JsonDocument.Parse(body);
+        var partition = document.RootElement.GetProperty("PartitionKey").GetString()!;
+        var row = document.RootElement.GetProperty("RowKey").GetString()!;
+        var rows = Rows(table);
+        var key = partition + "\n" + row;
+        if (rows.ContainsKey(key))
+            return Error(HttpStatusCode.Conflict, "EntityAlreadyExists", "The entity already exists.");
+
+        rows.Add(key, body);
+        return Json(HttpStatusCode.Created, "{}");
+    }
+
+    private async Task<HttpResponseMessage> BlobAsync(
+        HttpRequestMessage request,
+        string path,
+        IReadOnlyDictionary<string, string> query,
+        CancellationToken cancellationToken)
+    {
+        var separator = path.IndexOf('/', 1);
+        var container = separator < 0 ? path[1..] : path[1..separator];
+        var blob = separator < 0 ? string.Empty : path[(separator + 1)..];
+        var key = container + "/" + blob;
+        if (string.Equals(request.Method.Method, "PUT", StringComparison.OrdinalIgnoreCase)
+            && query.ContainsKey("restype"))
+        {
+            var created = _containers.Add(container);
+            return new HttpResponseMessage(created ? HttpStatusCode.Created : HttpStatusCode.Conflict);
+        }
+
+        if (request.Method == HttpMethod.Head)
+        {
+            var exists = blob.Length == 0
+                ? _containers.Contains(container)
+                : _blobs.ContainsKey(key);
+            return exists
+                ? BlobResponse(HttpStatusCode.OK, Array.Empty<byte>(), key)
+                : BlobMissing();
+        }
+
+        if (request.Method == HttpMethod.Put)
+        {
+            var bytes = request.Content is null
+                ? Array.Empty<byte>()
+                : await request.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
+            _containers.Add(container);
+            _blobs[key] = bytes;
+            return BlobResponse(HttpStatusCode.Created, Array.Empty<byte>(), key);
+        }
+
+        if (request.Method == HttpMethod.Get
+            && query.TryGetValue("comp", out var component)
+            && string.Equals(component, "list", StringComparison.OrdinalIgnoreCase))
+        {
+            return BlobList(container);
+        }
+
+        if (request.Method == HttpMethod.Get)
+            return _blobs.TryGetValue(key, out var stored)
+                ? BlobResponse(HttpStatusCode.OK, stored, key)
+                : BlobMissing();
+
+        if (request.Method == HttpMethod.Delete)
+        {
+            return _blobs.Remove(key)
+                ? BlobResponse(HttpStatusCode.Accepted, Array.Empty<byte>(), key)
+                : BlobMissing();
+        }
+
+        return Error(HttpStatusCode.BadRequest, "Unsupported", request.Method.Method);
+    }
+
+    private HttpResponseMessage BlobList(string container)
+    {
+        var names = _blobs.Keys
+            .Where(key => key.StartsWith(container + "/", StringComparison.Ordinal))
+            .Select(key => key[(container.Length + 1)..])
+            .Order(StringComparer.Ordinal)
+            .ToArray();
+        var xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?><EnumerationResults><Blobs>"
+            + string.Join(
+                string.Empty,
+                names.Select(name =>
+                    "<Blob><Name>" + System.Security.SecurityElement.Escape(name) + "</Name>"
+                    + "<Properties><Last-Modified>" + DateTimeOffset.UtcNow.ToString("R", CultureInfo.InvariantCulture)
+                    + "</Last-Modified><Etag>\\\"memory\\\"</Etag><Content-Length>0</Content-Length>"
+                    + "<Content-Type>application/octet-stream</Content-Type><BlobType>BlockBlob</BlobType>"
+                    + "</Properties></Blob>"))
+            + "</Blobs><NextMarker /></EnumerationResults>";
+        return Text(HttpStatusCode.OK, xml, "application/xml");
+    }
+
+    private static HttpResponseMessage BlobResponse(
+        HttpStatusCode status,
+        byte[] bytes,
+        string key)
+    {
+        var response = new HttpResponseMessage(status)
+        {
+            Content = new PersistentBytesContent(bytes, "application/octet-stream"),
+        };
+        response.Headers.ETag = new System.Net.Http.Headers.EntityTagHeaderValue("\"" + key.GetHashCode().ToString("X") + "\"");
+        return response;
     }
 
     private HttpResponseMessage CreateTable(string body)
@@ -55,7 +174,9 @@ internal sealed class AzureTableMemoryHandler : HttpMessageHandler
         }
 
         if (method == HttpMethod.Get)
-            return rows.TryGetValue(key, out var stored) ? Json(HttpStatusCode.OK, stored) : Missing();
+            return rows.TryGetValue(key, out var stored)
+                ? EntityJson(HttpStatusCode.OK, stored, key)
+                : Missing();
 
         if (method == HttpMethod.Delete)
         {
@@ -188,6 +309,15 @@ internal sealed class AzureTableMemoryHandler : HttpMessageHandler
         return table.Length > 0 && !table.Contains('/', StringComparison.Ordinal);
     }
 
+    private static bool TryParseEntityCollection(string path, out string table)
+    {
+        table = path.Length > 1 ? path[1..] : string.Empty;
+        return table.Length > 0
+            && !table.Contains('/', StringComparison.Ordinal)
+            && !table.Equals("Tables", StringComparison.OrdinalIgnoreCase)
+            && !table.EndsWith(')');
+    }
+
     private static Dictionary<string, string> ParseQuery(string query)
     {
         var result = new Dictionary<string, string>(StringComparer.Ordinal);
@@ -209,6 +339,12 @@ internal sealed class AzureTableMemoryHandler : HttpMessageHandler
     private static HttpResponseMessage Missing() =>
         Error(HttpStatusCode.NotFound, "ResourceNotFound", "The specified resource does not exist.");
 
+    private static HttpResponseMessage BlobMissing() =>
+        Text(
+            HttpStatusCode.NotFound,
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?><Error><Code>BlobNotFound</Code><Message>The specified blob does not exist.</Message></Error>",
+            "application/xml");
+
     private static HttpResponseMessage Error(HttpStatusCode status, string code, string message) =>
         Json(status, "{\"odata.error\":{\"code\":\"" + code + "\",\"message\":{\"lang\":\"en-US\",\"value\":\"" + message + "\"}}}");
 
@@ -217,6 +353,30 @@ internal sealed class AzureTableMemoryHandler : HttpMessageHandler
         var response = new HttpResponseMessage(status)
         {
             Content = new PersistentJsonContent(body),
+        };
+        return response;
+    }
+
+    private static HttpResponseMessage EntityJson(
+        HttpStatusCode status,
+        string body,
+        string key)
+    {
+        var etag = "\"" + key.GetHashCode().ToString("X") + "\"";
+        var json = body.TrimEnd();
+        json = json.EndsWith('}')
+            ? json[..^1] + ",\"odata.etag\":\"" + etag.Replace("\"", "\\\"", StringComparison.Ordinal) + "\"}"
+            : body;
+        var response = Json(status, json);
+        response.Headers.ETag = new System.Net.Http.Headers.EntityTagHeaderValue(etag);
+        return response;
+    }
+
+    private static HttpResponseMessage Text(HttpStatusCode status, string body, string contentType)
+    {
+        var response = new HttpResponseMessage(status)
+        {
+            Content = new PersistentBytesContent(Encoding.UTF8.GetBytes(body), contentType),
         };
         return response;
     }
@@ -246,17 +406,40 @@ internal sealed class AzureTableMemoryHandler : HttpMessageHandler
 
         protected override Task<Stream> CreateContentReadStreamAsync() =>
             Task.FromResult<Stream>(new PersistentStream(_bytes));
+    }
 
-        private sealed class PersistentStream : MemoryStream
+    private sealed class PersistentBytesContent : HttpContent
+    {
+        private readonly byte[] _bytes;
+
+        public PersistentBytesContent(byte[] bytes, string contentType)
         {
-            public PersistentStream(byte[] bytes)
-                : base(bytes, writable: false)
-            {
-            }
+            _bytes = bytes;
+            Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse(contentType);
+        }
 
-            protected override void Dispose(bool disposing)
-            {
-            }
+        protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context) =>
+            stream.WriteAsync(_bytes).AsTask();
+
+        protected override bool TryComputeLength(out long length)
+        {
+            length = _bytes.Length;
+            return true;
+        }
+
+        protected override Task<Stream> CreateContentReadStreamAsync() =>
+            Task.FromResult<Stream>(new PersistentStream(_bytes));
+    }
+
+    private sealed class PersistentStream : MemoryStream
+    {
+        public PersistentStream(byte[] bytes)
+            : base(bytes, writable: false)
+        {
+        }
+
+        protected override void Dispose(bool disposing)
+        {
         }
     }
 

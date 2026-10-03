@@ -79,10 +79,17 @@ internal sealed class AzureTableRepository<T> : IAzureTableRepository<T> where T
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         var table = await GetTableAsync(cancellationToken).ConfigureAwait(false);
+        var serviceSelect = select is null
+            ? null
+            : select
+                .Append(nameof(TableEntity.PartitionKey))
+                .Append(nameof(TableEntity.RowKey))
+                .Distinct(StringComparer.Ordinal)
+                .ToArray();
         await foreach (var row in table.QueryAsync<TableEntity>(
             filter: filter,
             maxPerPage: _options.MaxPerPage,
-            select: select,
+            select: serviceSelect,
             cancellationToken: cancellationToken).ConfigureAwait(false))
         {
             yield return row;
