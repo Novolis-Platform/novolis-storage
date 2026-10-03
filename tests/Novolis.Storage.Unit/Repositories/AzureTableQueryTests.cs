@@ -1,5 +1,5 @@
-using System.Collections;
 using System.Linq.Expressions;
+using System.Reflection;
 using Azure.Data.Tables;
 using Microsoft.Extensions.DependencyInjection;
 using Novolis.Storage.Abstractions;
@@ -81,10 +81,7 @@ public sealed class AzureTableQueryTests
         await Assert.That(() => query.Select(e => e.Name).Where(name => name == "Ada")).Throws<NotSupportedException>();
         await Assert.That(() => query.Select(e => e.Name).Select(name => name)).Throws<NotSupportedException>();
 
-        var where = typeof(Queryable).GetMethods().Single(method =>
-            method.Name == nameof(Queryable.Where) &&
-            method.IsGenericMethodDefinition &&
-            method.GetParameters().Length == 2);
+        var where = QueryableMethod(nameof(Queryable.Where), parameters: 2, funcArity: 2);
         var closed = where.MakeGenericMethod(typeof(AzureTableRecord));
         var lambda = (Expression<Func<AzureTableRecord, bool>>)(e => e.Active);
         var unquoted = Expression.Call(closed, query.Expression, lambda);
@@ -93,20 +90,17 @@ public sealed class AzureTableQueryTests
         var quotedWrong = Expression.Call(closed, query.Expression, Expression.Constant(lambda, lambda.GetType()));
         await Assert.That(() => AzureTableQueryPlan.Parse(quotedWrong)).Throws<NotSupportedException>();
 
-        var distinct = typeof(Queryable).GetMethods().Single(method =>
-            method.Name == nameof(Queryable.Distinct) &&
-            method.IsGenericMethodDefinition &&
-            method.GetParameters().Length == 1);
+        var distinct = QueryableMethod(nameof(Queryable.Distinct), parameters: 1, funcArity: 0);
         var distinctCall = Expression.Call(distinct.MakeGenericMethod(typeof(AzureTableRecord)), query.Expression);
         await Assert.That(() => AzureTableQueryPlan.Parse(distinctCall)).Throws<NotSupportedException>();
         await Assert.That(() => AzureTableQueryPlan.Parse(Expression.Constant(1))).Throws<NotSupportedException>();
         await Assert.That(() => AzureTableQueryPlan.Parse(Expression.Constant(new List<int>()))).Throws<NotSupportedException>();
 
-        var take = typeof(Queryable).GetMethods().Single(method =>
-            method.Name == nameof(Queryable.Take) &&
-            method.IsGenericMethodDefinition &&
-            method.GetParameters()[1].ParameterType == typeof(int));
-        var badTake = Expression.Call(take.MakeGenericMethod(typeof(AzureTableRecord)), query.Expression, Expression.Constant(1L));
+        var take = QueryableMethod(nameof(Queryable.Take), parameters: 2, funcArity: 0, lastType: typeof(int));
+        var badTake = Expression.Call(
+            take.MakeGenericMethod(typeof(AzureTableRecord)),
+            query.Expression,
+            Expression.Convert(Expression.Constant(1), typeof(int)));
         await Assert.That(() => AzureTableQueryPlan.Parse(badTake)).Throws<NotSupportedException>();
 
         await Assert.That(() => AzureTableQueryPlan.Parse(SelectCall(query, MemberBindSelector()))).Throws<NotSupportedException>();
@@ -114,15 +108,31 @@ public sealed class AzureTableQueryTests
             .IsEquivalentTo(new[] { nameof(AzureTableRecord.Count) });
     }
 
+    private static MethodInfo QueryableMethod(string name, int parameters, int funcArity, Type? lastType = null) =>
+        typeof(Queryable).GetMethods().Single(method =>
+            method.Name == name &&
+            method.IsGenericMethodDefinition &&
+            method.GetParameters().Length == parameters &&
+            (lastType is null || method.GetParameters()[^1].ParameterType == lastType) &&
+            (funcArity == 0
+                ? method.GetParameters().All(parameter => !parameter.ParameterType.IsGenericType || parameter.ParameterType.GetGenericTypeDefinition() != typeof(Expression<>))
+                : FuncArity(method.GetParameters()[^1].ParameterType) == funcArity));
+
+    private static int FuncArity(Type type)
+    {
+        if (!type.IsGenericType || type.GetGenericTypeDefinition() != typeof(Expression<>))
+            return 0;
+
+        var func = type.GetGenericArguments()[0];
+        return func.IsGenericType ? func.GetGenericArguments().Length : 0;
+    }
+
     private static AzureTableRepository<AzureTableRecord> Repository() =>
         new(new TableServiceClient("UseDevelopmentStorage=true"), new AzureTableOptions { ConnectionString = "UseDevelopmentStorage=true" });
 
     private static MethodCallExpression SelectCall(IAzureTableQuery<AzureTableRecord> query, LambdaExpression selector)
     {
-        var method = typeof(Queryable).GetMethods().Single(candidate =>
-            candidate.Name == nameof(Queryable.Select) &&
-            candidate.IsGenericMethodDefinition &&
-            candidate.GetParameters().Length == 2);
+        var method = QueryableMethod(nameof(Queryable.Select), parameters: 2, funcArity: 2);
         var closed = method.MakeGenericMethod(typeof(AzureTableRecord), selector.ReturnType);
         return Expression.Call(closed, query.Expression, Expression.Quote(selector));
     }

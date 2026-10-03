@@ -74,7 +74,9 @@ internal sealed class AzureTableQueryPlan
                 Walk(call.Arguments[0], entityType, predicates, ref selector, ref take);
                 if (call.Method.GetGenericArguments()[0] != entityType)
                     throw AzureTableFilterTranslator.Reject("Where after Select");
-                predicates.Add(AsLambda(call.Arguments[1]));
+                var predicate = AsLambda(call.Arguments[1]);
+                ValidatePredicate(entityType, predicate);
+                predicates.Add(predicate);
                 return;
             case nameof(Queryable.Select):
                 Walk(call.Arguments[0], entityType, predicates, ref selector, ref take);
@@ -109,6 +111,21 @@ internal sealed class AzureTableQueryPlan
 
     private static bool IsQueryType(Type type) =>
         type.IsGenericType && type.GetGenericTypeDefinition() == typeof(AzureTableQuery<>);
+
+    private static void ValidatePredicate(Type entityType, LambdaExpression predicate)
+    {
+        var method = typeof(AzureTableFilterTranslator)
+            .GetMethod(nameof(AzureTableFilterTranslator.Translate))!
+            .MakeGenericMethod(entityType);
+        try
+        {
+            method.Invoke(null, [predicate]);
+        }
+        catch (TargetInvocationException exception) when (exception.InnerException is not null)
+        {
+            System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(exception.InnerException).Throw();
+        }
+    }
 
     private static LambdaExpression AsLambda(Expression expression)
     {
