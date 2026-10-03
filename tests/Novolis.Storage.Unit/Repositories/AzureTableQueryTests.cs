@@ -90,6 +90,11 @@ public sealed class AzureTableQueryTests
         var quotedWrong = Expression.Call(closed, query.Expression, Expression.Constant(lambda, lambda.GetType()));
         await Assert.That(() => AzureTableQueryPlan.Parse(quotedWrong)).Throws<NotSupportedException>();
 
+        var foreign = Expression.Call(
+            typeof(AzureTableQueryTests).GetMethod(nameof(NotAQuery), BindingFlags.NonPublic | BindingFlags.Static)!,
+            query.Expression);
+        await Assert.That(() => AzureTableQueryPlan.Parse(foreign)).Throws<NotSupportedException>();
+
         var distinct = QueryableMethod(nameof(Queryable.Distinct), parameters: 1, funcArity: 0);
         var distinctCall = Expression.Call(distinct.MakeGenericMethod(typeof(AzureTableRecord)), query.Expression);
         await Assert.That(() => AzureTableQueryPlan.Parse(distinctCall)).Throws<NotSupportedException>();
@@ -107,6 +112,8 @@ public sealed class AzureTableQueryTests
         await Assert.That(AzureTableQueryPlan.Parse(SelectCall(query, CheckedSelector())).Columns)
             .IsEquivalentTo(new[] { nameof(AzureTableRecord.Count) });
     }
+
+    private static object NotAQuery(AzureTableQuery<AzureTableRecord> source) => source;
 
     private static MethodInfo QueryableMethod(string name, int parameters, int funcArity, Type? lastType = null) =>
         typeof(Queryable).GetMethods().Single(method =>

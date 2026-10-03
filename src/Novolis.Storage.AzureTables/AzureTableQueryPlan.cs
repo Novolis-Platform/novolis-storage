@@ -121,9 +121,9 @@ internal sealed class AzureTableQueryPlan
         {
             method.Invoke(null, [predicate]);
         }
-        catch (TargetInvocationException exception) when (exception.InnerException is not null)
+        catch (TargetInvocationException exception) when (exception.InnerException is Exception inner)
         {
-            System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(exception.InnerException).Throw();
+            throw inner;
         }
     }
 

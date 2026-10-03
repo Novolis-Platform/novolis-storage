@@ -38,10 +38,14 @@ internal static class AzureTableValues
         if (property.Name == nameof(Abstractions.IHasId.Id))
             return false;
 
+        EnsureStored(property);
+        return true;
+    }
+
+    public static void EnsureStored(PropertyInfo property)
+    {
         if (Reserved.Contains(property.Name))
             throw new NotSupportedException($"Property '{property.Name}' conflicts with an Azure Table system property.");
-
-        return true;
     }
 
     public static object Normalize(Type propertyType, object value)

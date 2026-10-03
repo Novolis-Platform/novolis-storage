@@ -175,8 +175,9 @@ public sealed class AzureTableRepositoryTests
         Skip.Unless(
             !AzuriteTableFixture.IsContinuousIntegration,
             "Azure Table container tests run locally and are skipped in CI.");
-        if (!AzuriteTableFixture.IsAvailable)
-            throw new InvalidOperationException("Azurite container failed to start.", AzuriteTableFixture.StartupError);
+        Skip.Unless(
+            AzuriteTableFixture.IsAvailable,
+            "Azurite container is not running.");
     }
 
     private static async Task<IHost> StartHostAsync(int? maxPerPage = null)

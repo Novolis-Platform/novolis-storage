@@ -13,6 +13,7 @@ internal static class AzureTableEntityMapper
         var row = new TableEntity(AzureTableKeys.Partition, AzureTableKeys.RowKey(entity.Id));
         foreach (var property in Cache<T>.Properties)
         {
+            AzureTableValues.EnsureStored(property);
             var value = property.GetValue(entity);
             if (value is null)
                 continue;
@@ -26,8 +27,7 @@ internal static class AzureTableEntityMapper
     public static T ToObject<T>(TableEntity row) where T : class, IHasId
     {
         AzureTableValues.EnsureMappable(typeof(T));
-        var entity = Activator.CreateInstance<T>()
-            ?? throw new InvalidOperationException($"Could not create an instance of {typeof(T).Name}.");
+        var entity = (T)Activator.CreateInstance(typeof(T))!;
         if (Cache<T>.Id is null || !Cache<T>.Id.CanWrite)
             throw new InvalidOperationException($"{typeof(T).Name} must have a writable Id.");
 

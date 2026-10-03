@@ -46,6 +46,11 @@ public sealed class AzureTableFilterBranchTests
         await Assert.That(() => AzureTableFilterTranslator.Translate<AzureTableRecord>(null!)).Throws<ArgumentNullException>();
         await Assert.That(() => AzureTableFilterTranslator.Translate<AzureTableRecord>(e => e.Name == e.Note)).Throws<NotSupportedException>();
         await Assert.That(() => AzureTableFilterTranslator.Translate<AzureTableRecord>(e => true == false)).Throws<NotSupportedException>();
+        var parameter = Expression.Parameter(typeof(AzureTableRecord), "e");
+        var constants = Expression.Lambda<Func<AzureTableRecord, bool>>(
+            Expression.Equal(Expression.Constant(1), Expression.Constant(2)),
+            parameter);
+        await Assert.That(() => AzureTableFilterTranslator.Translate(constants)).Throws<NotSupportedException>();
         await Assert.That(() => AzureTableFilterTranslator.Translate<AzureTableRecord>(e => string.Equals("a", "b"))).Throws<NotSupportedException>();
         await Assert.That(() => AzureTableFilterTranslator.Translate<AzureTableRecord>(e => "Ada".Equals(e.Name))).Throws<NotSupportedException>();
         await Assert.That(() => AzureTableFilterTranslator.Translate<AzureTableRecord>(e => e.Name.Equals("Ada", StringComparison.Ordinal))).Throws<NotSupportedException>();
@@ -54,7 +59,6 @@ public sealed class AzureTableFilterBranchTests
         await Assert.That(() => AzureTableFilterTranslator.Translate<AzureTableOdd>(e => e.flagField == true)).Throws<NotSupportedException>();
         await Assert.That(() => AzureTableFilterTranslator.Translate<AzureTableOdd>(e => e.Timestamp == "x")).Throws<NotSupportedException>();
 
-        var parameter = Expression.Parameter(typeof(AzureTableRecord), "e");
         var equals = typeof(object).GetMethod(nameof(object.Equals), [typeof(object), typeof(object)])!;
         var body = Expression.Equal(
             Expression.Convert(Expression.Property(parameter, nameof(AzureTableRecord.Id)), typeof(object)),

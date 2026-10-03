@@ -44,15 +44,12 @@ internal sealed class AzureTableRepository<T> : IAzureTableRepository<T> where T
     public async ValueTask<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var table = await GetTableAsync(cancellationToken).ConfigureAwait(false);
-        try
-        {
-            await table.DeleteEntityAsync(AzureTableKeys.Partition, AzureTableKeys.RowKey(id), ETag.All, cancellationToken).ConfigureAwait(false);
-            return true;
-        }
-        catch (RequestFailedException ex) when (ex.Status == 404)
-        {
-            return false;
-        }
+        var response = await table.DeleteEntityAsync(
+            AzureTableKeys.Partition,
+            AzureTableKeys.RowKey(id),
+            ETag.All,
+            cancellationToken).ConfigureAwait(false);
+        return response.Status != 404;
     }
 
     public IAsyncEnumerable<T> QueryAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
