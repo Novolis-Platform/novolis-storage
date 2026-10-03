@@ -6,6 +6,14 @@ The manifest is the publication point for an immutable aggregate revision.
 Blob state and indexes are derived physical representations; application
 entities remain free of Azure persistence types.
 
+## Install
+
+```bash
+dotnet add package Novolis.Storage.AzureCombinedStorage
+```
+
+## Quick start
+
 ```csharp
 services.AddStorage(builder => builder.AddAzureCombinedStorage(options =>
 {
