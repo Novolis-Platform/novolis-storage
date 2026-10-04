@@ -3,7 +3,10 @@ namespace Novolis.Storage.AzureTables;
 /// <summary>Configuration for the Azure Table storage provider.</summary>
 public sealed class AzureTableOptions
 {
-    /// <summary>Storage account connection string, including the table endpoint when using Azurite.</summary>
+    /// <summary>
+    /// Storage account or Azurite connection string.
+    /// An absolute http or https URI is treated as the table service endpoint and opened with the host's Azure credential.
+    /// </summary>
     public string ConnectionString { get; set; } = string.Empty;
 
     /// <summary>Optional prefix mixed into the generated table name so hosts can isolate data.</summary>

@@ -40,6 +40,16 @@ public sealed class AzureTableProviderTests
     }
 
     [Test]
+    public async Task Endpoint_uri_resolves_a_credential_client()
+    {
+        var services = new ServiceCollection();
+        services.AddStorage(b => b.AddAzureTableProvider(o =>
+            o.ConnectionString = "https://hours.table.core.windows.net/"));
+        await using var provider = services.BuildServiceProvider();
+        await Assert.That(provider.GetRequiredService<TableServiceClient>()).IsNotNull();
+    }
+
+    [Test]
     public async Task Configure_null_is_rejected()
     {
         var services = new ServiceCollection();

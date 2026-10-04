@@ -9,6 +9,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Azure.Data.Tables" />
+    <PackageReference Include="Azure.Identity" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <ProjectReference Include="../Novolis.Storage.Abstractions/Novolis.Storage.Abstractions.csproj" />
   </ItemGroup>

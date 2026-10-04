@@ -1,4 +1,5 @@
 using Azure.Data.Tables;
+using Azure.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Novolis.Storage.Abstractions;
 
@@ -26,10 +27,21 @@ public static class AzureTableStorageExtensions
             throw new ArgumentOutOfRangeException(nameof(configure), "Azure Table MaxPerPage must be between 1 and 1000.");
 
         builder.Services.AddSingleton(options);
-        builder.Services.AddSingleton(_ => new TableServiceClient(options.ConnectionString));
+        builder.Services.AddSingleton(_ => CreateTableServiceClient(options));
         builder.Services.AddSingleton<IRepositoryProvider, AzureTableRepositoryProvider>();
         builder.Services.AddTransient(typeof(IRepository<>), typeof(AzureTableRepository<>));
         builder.Services.AddTransient(typeof(IAzureTableRepository<>), typeof(AzureTableRepository<>));
         return builder;
+    }
+
+    private static TableServiceClient CreateTableServiceClient(AzureTableOptions options)
+    {
+        if (Uri.TryCreate(options.ConnectionString, UriKind.Absolute, out var endpoint)
+            && (endpoint.Scheme == Uri.UriSchemeHttps || endpoint.Scheme == Uri.UriSchemeHttp))
+        {
+            return new TableServiceClient(endpoint, new DefaultAzureCredential());
+        }
+
+        return new TableServiceClient(options.ConnectionString);
     }
 }
